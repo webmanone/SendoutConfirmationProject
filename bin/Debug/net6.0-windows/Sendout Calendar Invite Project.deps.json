@@ -6,6 +6,14 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
+      "Sendout Calendar Invite Project/1.0.0": {
+        "dependencies": {
+          "Extended.Wpf.Toolkit": "4.5.0"
+        },
+        "runtime": {
+          "Sendout Calendar Invite Project.dll": {}
+        }
+      },
       "Extended.Wpf.Toolkit/4.5.0": {
         "runtime": {
           "lib/net5.0/Xceed.Wpf.AvalonDock.NET5.dll": {
@@ -71,6 +79,11 @@
     }
   },
   "libraries": {
+    "Sendout Calendar Invite Project/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Extended.Wpf.Toolkit/4.5.0": {
       "type": "package",
       "serviceable": true,

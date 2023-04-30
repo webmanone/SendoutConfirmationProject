@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "AI9vwuXcW8lg5BqP60GpuRQw2KNpigmse50B4VToov6uw7R3hUfLF3JHDWhBmSbZdH6wCh3qPsRypuGbMuyLdw==",
+  "dgSpecHash": "jLEBmJ66owC6LZG7KsZm/KnP3UMHUrmRyt48BbCm3bL1tsbMRbxpHgk3grH2O82b9uI9Ve3By+QdXcAwk8j7pQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\lukem\\source\\repos\\Sendout Calendar Invite Project\\Sendout Calendar Invite Project.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\lukem\\.nuget\\packages\\extended.wpf.toolkit\\4.5.0\\extended.wpf.toolkit.4.5.0.nupkg.sha512"
+  ],
   "logs": []
 }

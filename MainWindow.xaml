@@ -3,14 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xct="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:Sendout_Calendar_Invite_Project"
         mc:Ignorable="d"
         Title="Sendout Confirmation Invite Creator" Width="956" Height="374">
     <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -35,30 +33,35 @@
             <ComboBoxItem>Other</ComboBoxItem>
         </ComboBox>
         <Label Grid.Row="0" Grid.Column="2" Content="Date/time:"/>
-        <DatePicker Grid.Row="0" Grid.Column="3" Width="200" Margin="5"/>
-        
+        <xct:DateTimePicker Grid.Row="0" Grid.Column="3" Width="200" Margin="5"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Client time zone:"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Width="200" Margin="5"/>
+
+        <Label Grid.Row="1" Grid.Column="2" Content="Candidate time zone:"/>
+        <TextBox Grid.Row="1" Grid.Column="3" Width="200" Margin="5"/>
+
         <Label Grid.Row="2" Grid.Column="0" Content="Client name:"/>
         <TextBox Grid.Row="2" Grid.Column="1" Width="200" Margin="5"/>
 
         <Label Grid.Row="2" Grid.Column="2" Content="Client email:"/>
         <TextBox Grid.Row="2" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="4" Grid.Column="0" Content="Client company:"/>
+        <Label Grid.Row="3" Grid.Column="0" Content="Client company:"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Width="200" Margin="5"/>
+
+        <Label Grid.Row="3" Grid.Column="2" Content="Candidate name:"/>
+        <TextBox Grid.Row="3" Grid.Column="3" Width="200" Margin="5"/>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Candidate email:"/>
         <TextBox Grid.Row="4" Grid.Column="1" Width="200" Margin="5"/>
 
-        <Label Grid.Row="4" Grid.Column="2" Content="Candidate name:"/>
+        <Label Grid.Row="4" Grid.Column="2" Content="Candidate phone:"/>
         <TextBox Grid.Row="4" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="6" Grid.Column="0" Content="Candidate email:"/>
-        <TextBox Grid.Row="6" Grid.Column="1" Width="200" Margin="5"/>
+        <Label Grid.Row="5" Grid.Column="0" Content="Additional info (optional):"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" Margin="5"/>
 
-        <Label Grid.Row="6" Grid.Column="2" Content="Candidate phone"/>
-        <TextBox Grid.Row="6" Grid.Column="3" Width="200" Margin="5"/>
-
-        <Label Grid.Row="8" Grid.Column="0" Content="Additional info (optional):"/>
-        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" Margin="5"/>
-
-
-        <Button Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="4" Content="Submit" Width="100" Margin="5"/>
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Content="Submit" Width="100" Margin="5"/>
     </Grid>
 </Window>

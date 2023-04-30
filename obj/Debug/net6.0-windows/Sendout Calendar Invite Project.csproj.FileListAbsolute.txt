@@ -1,0 +1,39 @@
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Sendout Calendar Invite Project.exe
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Sendout Calendar Invite Project.deps.json
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Sendout Calendar Invite Project.runtimeconfig.json
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Sendout Calendar Invite Project.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Sendout Calendar Invite Project.pdb
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Xceed.Wpf.AvalonDock.NET5.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Xceed.Wpf.AvalonDock.Themes.Aero.NET5.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Xceed.Wpf.AvalonDock.Themes.Metro.NET5.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Xceed.Wpf.AvalonDock.Themes.VS2010.NET5.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Xceed.Wpf.Toolkit.NET5.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\cs-CZ\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\de\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\es\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\fr\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\hu\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\it\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\ja-JP\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\pt-BR\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\ro\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\ru\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\sv\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\zh-Hans\Xceed.Wpf.AvalonDock.NET5.resources.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.csproj.AssemblyReference.cache
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\MainWindow.g.cs
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\App.g.cs
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project_MarkupCompile.cache
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project_MarkupCompile.lref
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\MainWindow.baml
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.g.resources
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.AssemblyInfoInputs.cache
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.AssemblyInfo.cs
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.csproj.CoreCompileInputs.cache
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.csproj.CopyComplete
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\refint\Sendout Calendar Invite Project.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.pdb
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.genruntimeconfig.cache
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\ref\Sendout Calendar Invite Project.dll
