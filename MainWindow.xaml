@@ -9,7 +9,7 @@
         Title="Sendout Confirmation Invite Creator" Width="956" Height="374">
     <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -25,41 +25,41 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0" Content="Template:"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="Template:" VerticalAlignment="Center"/>
         <ComboBox Grid.Row="0" Grid.Column="1" Width="200" Margin="5" SelectedIndex="0">
             <ComboBoxItem>First stage phone call</ComboBoxItem>
             <ComboBoxItem>Teams interview</ComboBoxItem>
             <ComboBoxItem>In-person interview</ComboBoxItem>
             <ComboBoxItem>Other</ComboBoxItem>
         </ComboBox>
-        <Label Grid.Row="0" Grid.Column="2" Content="Date/time:"/>
+        <Label Grid.Row="0" Grid.Column="2" Content="Date/time:" VerticalAlignment="Center"/>
         <xct:DateTimePicker Grid.Row="0" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Client time zone:"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Width="200" Margin="5"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Client time zone:" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Width="200" Margin="5" />
 
-        <Label Grid.Row="1" Grid.Column="2" Content="Candidate time zone:"/>
+        <Label Grid.Row="1" Grid.Column="2" Content="Candidate time zone:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="1" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="2" Grid.Column="0" Content="Client name:"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="Client name:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="2" Grid.Column="1" Width="200" Margin="5"/>
 
-        <Label Grid.Row="2" Grid.Column="2" Content="Client email:"/>
+        <Label Grid.Row="2" Grid.Column="2" Content="Client email:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="2" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="3" Grid.Column="0" Content="Client company:"/>
+        <Label Grid.Row="3" Grid.Column="0" Content="Client company:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="3" Grid.Column="1" Width="200" Margin="5"/>
 
-        <Label Grid.Row="3" Grid.Column="2" Content="Candidate name:"/>
+        <Label Grid.Row="3" Grid.Column="2" Content="Candidate name:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="3" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="4" Grid.Column="0" Content="Candidate email:"/>
+        <Label Grid.Row="4" Grid.Column="0" Content="Candidate email:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="4" Grid.Column="1" Width="200" Margin="5"/>
 
-        <Label Grid.Row="4" Grid.Column="2" Content="Candidate phone:"/>
+        <Label Grid.Row="4" Grid.Column="2" Content="Candidate phone:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="4" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="5" Grid.Column="0" Content="Additional info (optional):"/>
+        <Label Grid.Row="5" Grid.Column="0" Content="Additional info (optional):" VerticalAlignment="Center"/>
         <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" Margin="5"/>
 
         <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Content="Submit" Width="100" Margin="5"/>
