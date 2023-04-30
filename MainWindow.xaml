@@ -5,53 +5,60 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sendout_Calendar_Invite_Project"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Sendout Confirmation Invite Creator" Width="956" Height="374">
+    <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Content="Sendout Confirmation Invite Generator" Margin="10" HorizontalContentAlignment="Center" VerticalAlignment="Center"  />
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid Grid.ColumnSpan="2">
-                <Label Grid.Column="0" Content="Template:" VerticalAlignment="Center" Margin="10" />
-                <ComboBox HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="30" Margin="184,0,0,0" />
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Column 1" Margin="10" VerticalAlignment="Center" />
-            <Label Grid.Column="1" Content="Column 2" Margin="10" VerticalAlignment="Center" />
-        </Grid>
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Column 1" Margin="10" VerticalAlignment="Center" />
-            <Label Grid.Column="1" Content="Column 2" Margin="10" VerticalAlignment="Center" />
-        </Grid>
-        <Grid Grid.Row="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Content="Column 1" Margin="10" VerticalAlignment="Center" />
-            <Label Grid.Column="1" Content="Column 2" Margin="10" VerticalAlignment="Center" />
-        </Grid>
-        <Grid Grid.Row="5">
-            <Button Grid.Column="0" Content="Submit" HorizontalAlignment="Center" VerticalAlignment="Center" Height="52" Width="159"/>
-        </Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Template:"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" Width="200" Margin="5" SelectedIndex="0">
+            <ComboBoxItem>First stage phone call</ComboBoxItem>
+            <ComboBoxItem>Teams interview</ComboBoxItem>
+            <ComboBoxItem>In-person interview</ComboBoxItem>
+            <ComboBoxItem>Other</ComboBoxItem>
+        </ComboBox>
+        <Label Grid.Row="0" Grid.Column="2" Content="Date/time:"/>
+        <DatePicker Grid.Row="0" Grid.Column="3" Width="200" Margin="5"/>
+        
+        <Label Grid.Row="2" Grid.Column="0" Content="Client name:"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Width="200" Margin="5"/>
+
+        <Label Grid.Row="2" Grid.Column="2" Content="Client email:"/>
+        <TextBox Grid.Row="2" Grid.Column="3" Width="200" Margin="5"/>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Client company:"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Width="200" Margin="5"/>
+
+        <Label Grid.Row="4" Grid.Column="2" Content="Candidate name:"/>
+        <TextBox Grid.Row="4" Grid.Column="3" Width="200" Margin="5"/>
+
+        <Label Grid.Row="6" Grid.Column="0" Content="Candidate email:"/>
+        <TextBox Grid.Row="6" Grid.Column="1" Width="200" Margin="5"/>
+
+        <Label Grid.Row="6" Grid.Column="2" Content="Candidate phone"/>
+        <TextBox Grid.Row="6" Grid.Column="3" Width="200" Margin="5"/>
+
+        <Label Grid.Row="8" Grid.Column="0" Content="Additional info (optional):"/>
+        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" Margin="5"/>
+
+
+        <Button Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="4" Content="Submit" Width="100" Margin="5"/>
     </Grid>
 </Window>
