@@ -53,3 +53,4 @@ Code/functionality checklist:
 - Loads candidate into the boxes for additional editing.
 - Pressing preview will bring up the teams invite with everything ready to send.
 - Lets the user edit a template.
+- Ensure that if it's a teams invite, the settings are changed so that the client and candidate can enter the call without you being present.
