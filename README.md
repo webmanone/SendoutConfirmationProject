@@ -30,5 +30,16 @@ If it's a teams invite, it needs to automatically change the settings so that bo
 
 Because I'm scared of things going wrong and sending the wrong email to the wrong person, it needs to show the calendar invite and allow me to manually review it before I send it at first. <br>
 
-The user needs to be able to customise the message template, include thier email signature etc.
+The user needs to be able to customise the message template, include thier email signature etc. <br>
 
+Would be good if the user has the option to save client information and candidate information so they can select them quickly later.<br>
+
+Checklist:
+- Template (first call, teams, etc.)
+- Candidate name, number, email, time zone.
+- Client name, email, company, time zone.
+- Date & time of the interview.
+- Optional box for additional information.
+- Make sure user signature is added (should automatically be added on the invite).
+- Preview & ability to make chages before sending.
+- Ability to save client or candidate information and then use it in the future.
