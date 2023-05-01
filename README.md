@@ -43,6 +43,7 @@ GUI checklist:
 - Make sure user signature is added (should automatically be added on the invite).
 - Preview & ability to make chages before sending.
 - Ability to save client or candidate information and then use it in the future.
+- Add ability to edit template.
 
 Code/functionality checklist:
 - Takes the user input and puts it in a calendar invite.
@@ -51,3 +52,4 @@ Code/functionality checklist:
 - Saves client/candidate when data is clean.
 - Loads candidate into the boxes for additional editing.
 - Pressing preview will bring up the teams invite with everything ready to send.
+- Lets the user edit a template.
