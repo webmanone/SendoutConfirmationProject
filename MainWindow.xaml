@@ -26,7 +26,7 @@
         </Grid.ColumnDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Template:" VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="0" Grid.Column="1" Width="200" Margin="5" SelectedIndex="0">
+        <ComboBox Grid.Row="0" Grid.Column="1" Width="200" Margin="5" SelectedIndex="0" VerticalContentAlignment="Center">
             <ComboBoxItem>First stage phone call</ComboBoxItem>
             <ComboBoxItem>Teams interview</ComboBoxItem>
             <ComboBoxItem>In-person interview</ComboBoxItem>
@@ -44,16 +44,16 @@
         <Label Grid.Row="2" Grid.Column="0" Content="Client name:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="2" Grid.Column="1" Width="200" Margin="5"/>
 
-        <Label Grid.Row="2" Grid.Column="2" Content="Client email:" VerticalAlignment="Center"/>
+        <Label Grid.Row="2" Grid.Column="2" Content="Candidate name:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="2" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="3" Grid.Column="0" Content="Client company:" VerticalAlignment="Center"/>
+        <Label Grid.Row="3" Grid.Column="0" Content="Client email:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="3" Grid.Column="1" Width="200" Margin="5"/>
 
-        <Label Grid.Row="3" Grid.Column="2" Content="Candidate name:" VerticalAlignment="Center"/>
+        <Label Grid.Row="3" Grid.Column="2" Content="Candidate email:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="3" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="4" Grid.Column="0" Content="Candidate email:" VerticalAlignment="Center"/>
+        <Label Grid.Row="4" Grid.Column="0" Content="Client company:" VerticalAlignment="Center"/>
         <TextBox Grid.Row="4" Grid.Column="1" Width="200" Margin="5"/>
 
         <Label Grid.Row="4" Grid.Column="2" Content="Candidate phone:" VerticalAlignment="Center"/>
@@ -62,6 +62,11 @@
         <Label Grid.Row="5" Grid.Column="0" Content="Additional info (optional):" VerticalAlignment="Center"/>
         <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Width="Auto" Margin="5"/>
 
-        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Content="Submit" Width="100" Margin="5"/>
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Content="Preview" Width="100" Margin="5"/>
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Content="Save client" Width="100" Margin="5" HorizontalAlignment="left"/>
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Content="Load client" Width="100" Margin="119,5,0,5" HorizontalAlignment="Left"/>
+        <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Save candidate" Width="100" Margin="5" HorizontalAlignment="center"/>
+        <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Load candidate" Width="100" Margin="5" HorizontalAlignment="right"/>
+        <Button Grid.Column="1" Content="Edit" HorizontalAlignment="Left" Margin="268,0,0,0" VerticalAlignment="Center" Click="Button_Click" Width="39"/>
     </Grid>
 </Window>
