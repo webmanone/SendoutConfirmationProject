@@ -44,6 +44,7 @@ GUI checklist:
 - Preview & ability to make chages before sending.
 - Ability to save client or candidate information and then use it in the future.
 - Add ability to edit template.
+- Add option to add extra clients and copy people in on the invite.
 
 Code/functionality checklist:
 - Takes the user input and puts it in a calendar invite.
