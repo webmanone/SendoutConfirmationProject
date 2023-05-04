@@ -4,15 +4,11 @@ namespace Sendout_Calendar_Invite_Project
 {
     public class CalendarInvite
     {
-        public string EventTitle { get; set; }
+       // public string EventTitle { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public string ClientName { get; set; }
-        public string ClientEmail { get; set; }
-        public string ClientCompany { get; set; }
-        public string CandidateName { get; set; }
-        public string CandidateEmail { get; set; }
-        public string CandidatePhone { get; set; }
+        public Client Client { get; set; }
+        public Candidate Candidate { get; set; }
         public string AdditionalInfo { get; set; }
     }
 }
