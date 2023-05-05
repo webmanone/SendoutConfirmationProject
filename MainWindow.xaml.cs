@@ -22,6 +22,11 @@ namespace Sendout_Calendar_Invite_Project
     public partial class MainWindow : Window
     {
         private string selectedTemplate;
+        private DateTime? selectedDateTime;
+        private string clientTimeZone;
+        private string candidateTimeZone;
+        private string dateString;
+        private string startTimeString;
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +37,7 @@ namespace Sendout_Calendar_Invite_Project
             // Handle preview button click
 
             //string eventTitle = 
-           // DateTime startTime = (DateTime)DateTimePicker.Value;
+            //string startTime = selectedDateTime.Value.ToString("h:mm tt");
             //DateTime endTime = startTime.AddHours(1);
             string clientName = ClientNameTextBox.Text;
             string clientEmail = ClientEmailTextBox.Text;
@@ -48,7 +53,8 @@ namespace Sendout_Calendar_Invite_Project
             {
                 Name = clientName,
                 Email = clientEmail,
-                Company = clientCompany
+                Company = clientCompany,
+                TimeZone = clientTimeZone
             };
 
             // Create candidate object
@@ -56,15 +62,17 @@ namespace Sendout_Calendar_Invite_Project
             {
                 Name = candidateName,
                 Email = candidateEmail,
-                Phone = candidatePhone
+                Phone = candidatePhone,
+                TimeZone = candidateTimeZone
             };
 
             // Create calendar invite object using client and candidate objects
             CalendarInvite invite = new CalendarInvite
             {
                 // EventTitle = "Interview",
-                //StartTime = new DateTime(2023, 5, 10, 10, 0, 0),
-               // EndTime = new DateTime(2023, 5, 10, 11, 0, 0),
+                Date = dateString,
+                StartTime = selectedDateTime.Value,
+                EndTime = selectedDateTime.Value.AddMinutes(30),
                 Client = client,
                 Candidate = candidate,
                 AdditionalInfo = additionalInfo
@@ -72,7 +80,7 @@ namespace Sendout_Calendar_Invite_Project
 
             if (selectedTemplate == "First stage phone call")
             {
-                emailTemplate = $"{client.Name}/{candidate.Name}, I'm pleased to confirm the following initial phone call";
+                emailTemplate = $"{client.Name}/{candidate.Name}, I'm pleased to confirm the following initial phone call at {startTimeString}";
 
             } else if (selectedTemplate == "Teams Interview")
             {
@@ -131,19 +139,25 @@ namespace Sendout_Calendar_Invite_Project
 
             private void ClientComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                // Handle selection change event
+                ComboBox comboBox = (ComboBox)sender;
+                clientTimeZone = comboBox.SelectedItem.ToString();
             }
 
             private void CandidateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                // Handle selection change event
-            }
+                ComboBox comboBox = (ComboBox)sender;
+                candidateTimeZone = comboBox.SelectedItem.ToString();
+        }
         
             private void DateTimePicker_SelectedDateTimeChanged(object sender, RoutedEventArgs e)
-                {
-                    DateTime? selectedDateTime = ((Xceed.Wpf.Toolkit.DateTimePicker)sender).Value;
-                    // Do something with the selected date/time
-                }
+            {
+                DateTime? selectedDateTime = ((Xceed.Wpf.Toolkit.DateTimePicker)sender).Value;
+
+                DateTime selectedDate = (DateTime)selectedDateTime;
+                dateString = selectedDate.ToString("dddd MMMM d");
+                startTimeString = selectedDateTime.Value.ToString("h:mm tt");
+
+        }
 
     }
 }
