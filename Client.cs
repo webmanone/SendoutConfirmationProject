@@ -11,6 +11,6 @@ namespace Sendout_Calendar_Invite_Project
         public string Name { get; set; }
         public string Email { get; set; }
         public string Company { get; set; }
-        public string TimeZone { get; set; }
+        public TimeZoneInfo TimeZone { get; set; }
     }
 }
