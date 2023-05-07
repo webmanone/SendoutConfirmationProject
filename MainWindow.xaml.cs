@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Primitives;
+using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -39,7 +40,7 @@ namespace Sendout_Calendar_Invite_Project
             {
             // Handle preview button click
 
-            //string eventTitle = 
+            string eventTitle = "";
             //string startTime = selectedDateTime.Value.ToString("h:mm tt");
             //DateTime endTime = startTime.AddHours(1);
             string clientName = ClientNameTextBox.Text;
@@ -49,6 +50,8 @@ namespace Sendout_Calendar_Invite_Project
             string candidateEmail = CandidateEmailTextBox.Text;
             string candidatePhone = CandidatePhoneTextBox.Text;
             string additionalInfo = AdditionalInfoTextBox.Text;
+            string clientFirstName = clientName.Split(' ')[0];
+            string candidateFirstName = candidateName.Split(' ')[0];
             string emailTemplate = "";
             string differentTimeZone = "";
             //template, candidate time zone and client time zone should already be stored by the event handlers
@@ -73,7 +76,8 @@ namespace Sendout_Calendar_Invite_Project
             // Create calendar invite object using client and candidate objects
             CalendarInvite invite = new CalendarInvite
             {
-                // EventTitle = "Interview",
+                EventTitle = eventTitle,
+                EventType = selectedTemplate,
                 Date = dateString,
                 StartTime = selectedDateTime,
                 EndTime = selectedDateTime.AddMinutes(30),
@@ -81,6 +85,8 @@ namespace Sendout_Calendar_Invite_Project
                 Candidate = candidate,
                 AdditionalInfo = additionalInfo
             };
+
+            eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
 
             if (client.TimeZone != candidate.TimeZone)
             {
@@ -90,20 +96,72 @@ namespace Sendout_Calendar_Invite_Project
                 differentTimeZone += $"{clientTime}{clientTimeZone}";
             }
 
+
             if (selectedTemplate == "First stage phone call")
             {
-                emailTemplate = $"{client.Name}/{candidate.Name}, I'm pleased to confirm the following initial phone call at {differentTimeZone} ";
+                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $" Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
+                    $"Candidate: {candidate.Name} \n" +
+                    $"Date: {invite.Date} \n" +
+                    $"Time: {differentTimeZone} \n \n" +
+                    $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
+                    $"I'm looking forward to discussing feedback following the call. \n \n" +
+                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"Best regards, \n";
 
             } else if (selectedTemplate == "Teams Interview")
             {
-
+                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $" Client: {client.Name} - {client.Company} \n" +
+                    $"Candidate: {candidate.Name} \n" +
+                    $"Date: {invite.Date} \n" +
+                    $"Time: {differentTimeZone} \n \n" +
+                    $"Please join the Teams meeting at the arranged time \n \n" +
+                    $"I'm looking forward to discussing feedback following the call. \n \n" +
+                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"Best regards, \n";
             } else if (selectedTemplate == "In-person interview")
             {
-
+                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $" Client: {client.Name} - {client.Company} \n" +
+                    $"Candidate: {candidate.Name} \n" +
+                    $"Date: {invite.Date} \n" +
+                    $"Time: {differentTimeZone} \n \n" +
+                    $"{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached at {candidate.Phone} or {candidate.Email}. \n \n" +
+                    $"I'm looking forward to discussing feedback following the call. \n \n" +
+                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"Best regards, \n";
             } else if (selectedTemplate == "Other")
             {
-
+                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $" Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
+                    $"Candidate: {candidate.Name} \n" +
+                    $"Date: {invite.Date} \n" +
+                    $"Time: {differentTimeZone} \n \n" +
+                    $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
+                    $"I'm looking forward to discussing feedback following the call. \n \n" +
+                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"Best regards, \n";
             }
+
+            // create a new appointment item
+            Outlook.Application outlookApp = new Outlook.Application();
+            Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
+
+            // set the properties of the appointment
+            appointment.Subject = invite.EventTitle;
+            //appointment.Location = "Microsoft Teams";
+            appointment.Body = emailTemplate;
+            appointment.Recipients.Add(client.Email);
+            appointment.Recipients.Add(candidate.Email);
+            appointment.Start = invite.StartTime;
+            appointment.End = invite.EndTime;
+
+            appointment.Display(true);
         }
 
             private void SaveClient_Click(object sender, RoutedEventArgs e)

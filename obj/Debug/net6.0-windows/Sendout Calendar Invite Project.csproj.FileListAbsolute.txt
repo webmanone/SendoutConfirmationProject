@@ -37,3 +37,5 @@ C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-win
 C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.pdb
 C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.genruntimeconfig.cache
 C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\ref\Sendout Calendar Invite Project.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Interop.Microsoft.Office.Interop.Outlook.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.csproj.ResolveComReference.cache
