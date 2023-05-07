@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Primitives;
+using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -146,6 +147,21 @@ namespace Sendout_Calendar_Invite_Project
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
                     $"Best regards, \n";
             }
+
+            // create a new appointment item
+            Outlook.Application outlookApp = new Outlook.Application();
+            Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
+
+            // set the properties of the appointment
+            appointment.Subject = invite.EventTitle;
+            //appointment.Location = "Microsoft Teams";
+            appointment.Body = emailTemplate;
+            appointment.Recipients.Add(client.Email);
+            appointment.Recipients.Add(candidate.Email);
+            appointment.Start = invite.StartTime;
+            appointment.End = invite.EndTime;
+
+            appointment.Display(true);
         }
 
             private void SaveClient_Click(object sender, RoutedEventArgs e)
