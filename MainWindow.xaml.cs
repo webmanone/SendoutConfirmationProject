@@ -39,7 +39,7 @@ namespace Sendout_Calendar_Invite_Project
             {
             // Handle preview button click
 
-            //string eventTitle = 
+            string eventTitle = "";
             //string startTime = selectedDateTime.Value.ToString("h:mm tt");
             //DateTime endTime = startTime.AddHours(1);
             string clientName = ClientNameTextBox.Text;
@@ -73,7 +73,8 @@ namespace Sendout_Calendar_Invite_Project
             // Create calendar invite object using client and candidate objects
             CalendarInvite invite = new CalendarInvite
             {
-                // EventTitle = "Interview",
+                EventTitle = eventTitle,
+                EventType = selectedTemplate,
                 Date = dateString,
                 StartTime = selectedDateTime,
                 EndTime = selectedDateTime.AddMinutes(30),
@@ -81,6 +82,8 @@ namespace Sendout_Calendar_Invite_Project
                 Candidate = candidate,
                 AdditionalInfo = additionalInfo
             };
+
+            eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
 
             if (client.TimeZone != candidate.TimeZone)
             {
