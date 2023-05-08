@@ -213,6 +213,11 @@ namespace Sendout_Calendar_Invite_Project
                 ComboBox comboBox = (ComboBox)sender;
                 string timeZoneName = comboBox.SelectedItem.ToString();
                 
+                if (clientTimeZone == null)
+                {
+                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+                }
+
                 if (timeZoneName == "Eastern"){
                 clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                     if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)) {
@@ -237,6 +242,7 @@ namespace Sendout_Calendar_Invite_Project
                         clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Daylight Time");
                     }
                 }
+
                 clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
             }
 
@@ -244,8 +250,13 @@ namespace Sendout_Calendar_Invite_Project
             {
                 ComboBox comboBox = (ComboBox)sender;
                 string timeZoneName = comboBox.SelectedItem.ToString();
+            
+            if (candidateTimeZone == null)
+            {
+                candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            }
 
-                if (timeZoneName == "Eastern"){
+            if (timeZoneName == "Eastern"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                     if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
                         candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
@@ -269,7 +280,7 @@ namespace Sendout_Calendar_Invite_Project
                         candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Daylight Time");
                     }
                 }
-                candidateTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
+                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
             }
 
             private string ConvertTimeZone(DateTime dateTime, TimeZoneInfo targetZone)
@@ -283,7 +294,7 @@ namespace Sendout_Calendar_Invite_Project
 
         private void DateTimePicker_SelectedDateTimeChanged(object sender, RoutedEventArgs e)
             {
-                DateTime? selectedDateTime = ((Xceed.Wpf.Toolkit.DateTimePicker)sender).Value;
+                DateTime selectedDateTime = ((Xceed.Wpf.Toolkit.DateTimePicker)sender).Value ?? DateTime.MinValue;
 
                 DateTime selectedDate = (DateTime)selectedDateTime;
                 
