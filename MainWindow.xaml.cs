@@ -24,12 +24,13 @@ namespace Sendout_Calendar_Invite_Project
     public partial class MainWindow : Window
     {
         private string selectedTemplate;
+        private DateTime selectedDate;
         private DateTime selectedDateTime;
         private TimeZoneInfo clientTimeZone;
         private TimeZoneInfo candidateTimeZone;
         private string clientTime;
         private string candidateTime;
-        private string dateString;
+       // private string dateString;
         private string startTimeString;
         public MainWindow()
         {
@@ -78,7 +79,7 @@ namespace Sendout_Calendar_Invite_Project
             {
                 EventTitle = eventTitle,
                 EventType = selectedTemplate,
-                Date = dateString,
+                Date = selectedDate,
                 StartTime = selectedDateTime,
                 EndTime = selectedDateTime.AddMinutes(30),
                 Client = client,
@@ -152,14 +153,25 @@ namespace Sendout_Calendar_Invite_Project
             Outlook.Application outlookApp = new Outlook.Application();
             Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
 
-            // set the properties of the appointment
-            appointment.Subject = invite.EventTitle;
-            //appointment.Location = "Microsoft Teams";
-            appointment.Body = emailTemplate;
-            appointment.Recipients.Add(client.Email);
-            appointment.Recipients.Add(candidate.Email);
-            appointment.Start = invite.StartTime;
-            appointment.End = invite.EndTime;
+            /*  // set the properties of the appointment
+              appointment.Subject = invite.EventTitle;
+              appointment.Location = "Microsoft Teams";
+              appointment.Body = emailTemplate;
+              appointment.Recipients.Add(client.Email);
+              appointment.Recipients.Add(candidate.Email);
+             */ // appointment.Start = invite.StartTime;
+                //appointment.End = invite.EndTime;
+
+            appointment.Subject = "yeet";
+            appointment.Location = "Microsoft Teams";
+            appointment.Body = "emailTemplate";
+            appointment.Recipients.Add("yeet");
+            appointment.Recipients.Add("yeet");
+            DateTime start = new DateTime(invite.Date.Year, invite.Date.Month, invite.Date.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
+            DateTime end = new DateTime(invite.Date.Year, invite.Date.Month, invite.Date.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
+
+            appointment.Start = start;
+            appointment.End = end;
 
             appointment.Display(true);
         }
