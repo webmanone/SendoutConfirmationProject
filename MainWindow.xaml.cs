@@ -23,7 +23,7 @@ namespace Sendout_Calendar_Invite_Project
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string selectedTemplate;
+        private string selectedTemplate = "First stage phone call";
         private DateTime selectedDate;
         private DateTime selectedDateTime;
         private TimeZoneInfo clientTimeZone;
@@ -41,7 +41,7 @@ namespace Sendout_Calendar_Invite_Project
             {
             // Handle preview button click
 
-            string eventTitle = "";
+            string eventTitle = null;
             //string startTime = selectedDateTime.Value.ToString("h:mm tt");
             //DateTime endTime = startTime.AddHours(1);
             string clientName = ClientNameTextBox.Text;
@@ -100,7 +100,7 @@ namespace Sendout_Calendar_Invite_Project
 
             if (selectedTemplate == "First stage phone call")
             {
-                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
                     $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $" Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
@@ -111,9 +111,9 @@ namespace Sendout_Calendar_Invite_Project
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
                     $"Best regards, \n";
 
-            } else if (selectedTemplate == "Teams Interview")
+            } else if (selectedTemplate == "Teams interview")
             {
-                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
                     $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $" Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
@@ -125,7 +125,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"Best regards, \n";
             } else if (selectedTemplate == "In-person interview")
             {
-                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
                     $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $" Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
@@ -137,7 +137,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"Best regards, \n";
             } else if (selectedTemplate == "Other")
             {
-                emailTemplate = $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
                     $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $" Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
@@ -153,27 +153,19 @@ namespace Sendout_Calendar_Invite_Project
             Outlook.Application outlookApp = new Outlook.Application();
             Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
 
-            /*  // set the properties of the appointment
-              appointment.Subject = invite.EventTitle;
-              appointment.Location = "Microsoft Teams";
-              appointment.Body = emailTemplate;
-              appointment.Recipients.Add(client.Email);
-              appointment.Recipients.Add(candidate.Email);
-             */ // appointment.Start = invite.StartTime;
-                //appointment.End = invite.EndTime;
-
-            appointment.Subject = "yeet";
+            // set the properties of the appointment
+            appointment.Subject = eventTitle;
             appointment.Location = "Microsoft Teams";
-            appointment.Body = "emailTemplate";
-            appointment.Recipients.Add("yeet");
-            appointment.Recipients.Add("yeet");
+            appointment.Body = emailTemplate;
+            appointment.Recipients.Add(client.Email);
+            appointment.Recipients.Add(candidate.Email);
             DateTime start = new DateTime(invite.Date.Year, invite.Date.Month, invite.Date.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
             DateTime end = new DateTime(invite.Date.Year, invite.Date.Month, invite.Date.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
 
             appointment.Start = start;
             appointment.End = end;
 
-            appointment.Display(true);
+            appointment.Display(true); //need to edit as causes an error if calendar invite is already up
         }
 
             private void SaveClient_Click(object sender, RoutedEventArgs e)
@@ -206,24 +198,16 @@ namespace Sendout_Calendar_Invite_Project
                 // Add a new client to the list of clients
             }
 
-            private void TemplateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            private void TemplateComboBox_DropDownClosed(object sender, EventArgs e)
             {
-                ComboBox comboBox = (ComboBox)sender;
-
-                if (comboBox.SelectedItem != null)
-                {
-                    selectedTemplate = comboBox.SelectedItem.ToString();
-                }
-                else
-                {
-                    System.Windows.MessageBox.Show("Please select a template.");
-                }
+                //ComboBox comboBox = (ComboBox)sender;
+                selectedTemplate = TemplateComboBox.Text;    
             }
 
             private void ClientComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
                 ComboBox comboBox = (ComboBox)sender;
-                string timeZoneName = comboBox.SelectedItem.ToString();
+                string timeZoneName = ClientComboBox.Text;
                 
                 if (clientTimeZone == null)
                 {
@@ -261,7 +245,7 @@ namespace Sendout_Calendar_Invite_Project
             private void CandidateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
                 ComboBox comboBox = (ComboBox)sender;
-                string timeZoneName = comboBox.SelectedItem.ToString();
+                string timeZoneName = CandidateComboBox.Text;
             
             if (candidateTimeZone == null)
             {
