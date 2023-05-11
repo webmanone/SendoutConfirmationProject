@@ -35,10 +35,10 @@
         <Button Grid.Row="0" Grid.Column="1" Content="Edit" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Center" Click="Edit_Click" Width="39"/>
         
         <Label Grid.Row="0" Grid.Column="2" Content="Date/time:" VerticalAlignment="Center"/>
-        <xct:DateTimePicker Grid.Row="0" Grid.Column="3" Width="200" Margin="5" ValueChanged="DateTimePicker_SelectedDateTimeChanged"/>
+        <xct:DateTimePicker x:Name="DateTimePicker" Grid.Row="0" Grid.Column="3" Width="200" Margin="5" ValueChanged="DateTimePicker_ValueChanged"/>
 
         <Label Grid.Row="1" Grid.Column="0" Content="Client time zone:" VerticalAlignment="Center"/>
-        <ComboBox x:Name="ClientComboBox" Grid.Row="1" Grid.Column="1" Width="200" Margin="5" SelectedIndex="0" VerticalContentAlignment="Center" SelectionChanged="ClientComboBox_SelectionChanged">
+        <ComboBox x:Name="ClientComboBox" Grid.Row="1" Grid.Column="1" Width="200" Margin="5" SelectedIndex="0" VerticalContentAlignment="Center" DropDownClosed="ClientComboBox_DropDownClosed">
             <ComboBoxItem>Eastern</ComboBoxItem>
             <ComboBoxItem>Central</ComboBoxItem>
             <ComboBoxItem>Mountain</ComboBoxItem>
@@ -46,7 +46,7 @@
         </ComboBox>
 
         <Label Grid.Row="1" Grid.Column="2" Content="Candidate time zone:" VerticalAlignment="Center"/>
-        <ComboBox x:Name="CandidateComboBox" Grid.Row="1" Grid.Column="4" Width="200" Margin="5" SelectedIndex="0" VerticalContentAlignment="Center" SelectionChanged="CandidateComboBox_SelectionChanged">
+        <ComboBox x:Name="CandidateComboBox" Grid.Row="1" Grid.Column="4" Width="200" Margin="5" SelectedIndex="0" VerticalContentAlignment="Center" DropDownClosed="CandidateComboBox_DropDownClosed">
             <ComboBoxItem>Eastern</ComboBoxItem>
             <ComboBoxItem>Central</ComboBoxItem>
             <ComboBoxItem>Mountain</ComboBoxItem>
