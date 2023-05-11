@@ -24,7 +24,7 @@ namespace Sendout_Calendar_Invite_Project
     public partial class MainWindow : Window
     {
         private string selectedTemplate = "First stage phone call";
-        private DateTime selectedDate;
+        private string selectedDate;
         private DateTime selectedDateTime;
         private TimeZoneInfo clientTimeZone;
         private TimeZoneInfo candidateTimeZone;
@@ -87,6 +87,24 @@ namespace Sendout_Calendar_Invite_Project
                 AdditionalInfo = additionalInfo
             };
 
+            if (clientTimeZone == null)
+            {
+                clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+                if (clientTimeZone.IsDaylightSavingTime(selectedDateTime))
+                {
+                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Daylight Time");
+                }
+            }
+
+            if (candidateTimeZone == null)
+            {
+                candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime))
+                {
+                    candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
+                }
+            }
+
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
 
             if (client.TimeZone != candidate.TimeZone)
@@ -101,8 +119,8 @@ namespace Sendout_Calendar_Invite_Project
             if (selectedTemplate == "First stage phone call")
             {
                 emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
-                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
-                    $" Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
                     $"Time: {differentTimeZone} \n \n" +
@@ -114,8 +132,8 @@ namespace Sendout_Calendar_Invite_Project
             } else if (selectedTemplate == "Teams interview")
             {
                 emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
-                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
-                    $" Client: {client.Name} - {client.Company} \n" +
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
                     $"Time: {differentTimeZone} \n \n" +
@@ -126,8 +144,8 @@ namespace Sendout_Calendar_Invite_Project
             } else if (selectedTemplate == "In-person interview")
             {
                 emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
-                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
-                    $" Client: {client.Name} - {client.Company} \n" +
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
                     $"Time: {differentTimeZone} \n \n" +
@@ -138,8 +156,8 @@ namespace Sendout_Calendar_Invite_Project
             } else if (selectedTemplate == "Other")
             {
                 emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
-                    $" I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
-                    $" Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
                     $"Time: {differentTimeZone} \n \n" +
@@ -159,8 +177,8 @@ namespace Sendout_Calendar_Invite_Project
             appointment.Body = emailTemplate;
             appointment.Recipients.Add(client.Email);
             appointment.Recipients.Add(candidate.Email);
-            DateTime start = new DateTime(invite.Date.Year, invite.Date.Month, invite.Date.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
-            DateTime end = new DateTime(invite.Date.Year, invite.Date.Month, invite.Date.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
+            DateTime start = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
+            DateTime end = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
 
             appointment.Start = start;
             appointment.End = end;
@@ -200,22 +218,17 @@ namespace Sendout_Calendar_Invite_Project
 
             private void TemplateComboBox_DropDownClosed(object sender, EventArgs e)
             {
-                //ComboBox comboBox = (ComboBox)sender;
+        
                 selectedTemplate = TemplateComboBox.Text;    
             }
 
-            private void ClientComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            private void ClientComboBox_DropDownClosed(object sender, EventArgs e)
             {
-                ComboBox comboBox = (ComboBox)sender;
-                string timeZoneName = ClientComboBox.Text;
                 
-                if (clientTimeZone == null)
-                {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
-                }
-
+                string timeZoneName = ClientComboBox.Text;
+               
                 if (timeZoneName == "Eastern"){
-                clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                     if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)) {
                         clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
                     }
@@ -242,17 +255,11 @@ namespace Sendout_Calendar_Invite_Project
                 clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
             }
 
-            private void CandidateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            private void CandidateComboBox_DropDownClosed(object sender, EventArgs e)
             {
-                ComboBox comboBox = (ComboBox)sender;
                 string timeZoneName = CandidateComboBox.Text;
             
-            if (candidateTimeZone == null)
-            {
-                candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
-            }
-
-            if (timeZoneName == "Eastern"){
+                if (timeZoneName == "Eastern"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                     if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
                         candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
@@ -288,11 +295,14 @@ namespace Sendout_Calendar_Invite_Project
             return formattedTime;
             }
 
-        private void DateTimePicker_SelectedDateTimeChanged(object sender, RoutedEventArgs e)
+        private void DateTimePicker_ValueChanged(object sender, EventArgs e)
             {
-                DateTime selectedDateTime = ((Xceed.Wpf.Toolkit.DateTimePicker)sender).Value ?? DateTime.MinValue;
+            DateTimePicker dateTimePicker = new DateTimePicker();
+            //DateTime selectedDateTime = dateTimePicker.Value;
 
-                DateTime selectedDate = (DateTime)selectedDateTime;
+            //DateTime selectedDateTime = ((Xceed.Wpf.Toolkit.DateTimePicker)sender).Value;
+
+            string selectedDate = selectedDateTime.ToLongDateString();
                 
                // dateString = selectedDate.ToString("dddd MMMM d");
                 //startTimeString = selectedDateTime.Value.ToString("h:mm tt");
