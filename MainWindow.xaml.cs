@@ -172,11 +172,14 @@ namespace Sendout_Calendar_Invite_Project
             Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
 
             // set the properties of the appointment
+            appointment.MeetingStatus = Outlook.OlMeetingStatus.olMeeting;
+            Outlook.Recipient clientRecipient = appointment.Recipients.Add(client.Email);
+            clientRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
+            Outlook.Recipient candidateRecipient = appointment.Recipients.Add(candidate.Email);
+            candidateRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
             appointment.Subject = eventTitle;
             appointment.Location = "Microsoft Teams";
             appointment.Body = emailTemplate;
-            appointment.Recipients.Add(client.Email);
-            appointment.Recipients.Add(candidate.Email);
             DateTime start = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
             DateTime end = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
 
