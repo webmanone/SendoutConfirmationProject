@@ -35,7 +35,8 @@ namespace Sendout_Calendar_Invite_Project
         public MainWindow()
         {
             InitializeComponent();
-
+            DateTimePicker dateTimePicker = new DateTimePicker();
+            dateTimePicker.Value = DateTime.Now;
         }
             private void Preview_Click(object sender, RoutedEventArgs e)
             {
@@ -89,10 +90,10 @@ namespace Sendout_Calendar_Invite_Project
 
             if (clientTimeZone == null)
             {
-                clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+                clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 if (clientTimeZone.IsDaylightSavingTime(selectedDateTime))
                 {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Daylight Time");
+                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
                 }
             }
 
@@ -300,10 +301,12 @@ namespace Sendout_Calendar_Invite_Project
 
         private void DateTimePicker_ValueChanged(object sender, EventArgs e)
             {
-            DateTimePicker dateTimePicker = new DateTimePicker();
+            // DateTimePicker dateTimePicker = new DateTimePicker();
             //DateTime selectedDateTime = dateTimePicker.Value;
 
-            //DateTime selectedDateTime = ((Xceed.Wpf.Toolkit.DateTimePicker)sender).Value;
+            DateTimePicker dateTimePicker = (DateTimePicker)sender;
+
+            selectedDateTime = dateTimePicker.Value ?? DateTime.Now;
 
             string selectedDate = selectedDateTime.ToLongDateString();
                 
