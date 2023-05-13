@@ -112,16 +112,16 @@ namespace Sendout_Calendar_Invite_Project
 
             if (client.TimeZone != candidate.TimeZone)
             {
-                differentTimeZone += $"{clientTime}{clientTimeZoneString}/{candidateTime}{candidateTimeZoneString}";
+                differentTimeZone += $"{clientTime} {clientTimeZoneString}/{candidateTime} {candidateTimeZoneString}";
             } else
             {
-                differentTimeZone += $"{clientTime}{clientTimeZoneString}";
+                differentTimeZone += $"{clientTime} {clientTimeZoneString}";
             }
 
 
             if (selectedTemplate == "First stage phone call")
             {
-                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
                     $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
@@ -130,11 +130,12 @@ namespace Sendout_Calendar_Invite_Project
                     $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"{invite.AdditionalInfo} \n \n" +
                     $"Best regards, \n";
 
             } else if (selectedTemplate == "Teams interview")
             {
-                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
                     $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
@@ -143,10 +144,11 @@ namespace Sendout_Calendar_Invite_Project
                     $"Please join the Teams meeting at the arranged time \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"{invite.AdditionalInfo} \n \n" +
                     $"Best regards, \n";
             } else if (selectedTemplate == "In-person interview")
             {
-                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
                     $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
@@ -155,10 +157,11 @@ namespace Sendout_Calendar_Invite_Project
                     $"{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached at {candidate.Phone} or {candidate.Email}. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"{invite.AdditionalInfo} \n \n" +
                     $"Best regards, \n";
             } else if (selectedTemplate == "Other")
             {
-                emailTemplate += $"{client.Name}/{candidate.Name}, \n \n" +
+                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
                     $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
@@ -167,6 +170,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
+                    $"{invite.AdditionalInfo} \n \n" +
                     $"Best regards, \n";
             }
 
