@@ -93,19 +93,17 @@ namespace Sendout_Calendar_Invite_Project
             if (clientTimeZone == null)
             {
                 clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                if (clientTimeZone.IsDaylightSavingTime(selectedDateTime))
-                {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
+                clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
+                clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
             }
 
             if (candidateTimeZone == null)
             {
                 candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime))
-                {
-                    candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
+                candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
+                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
             }
 
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
@@ -239,48 +237,21 @@ namespace Sendout_Calendar_Invite_Project
                
                 if (clientTimeZoneString == "Eastern"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                   /* if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)) {
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
-                    }*/
                 }
                 else if (clientTimeZoneString == "Central"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                    /*if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Daylight Time");
-                    }*/
                 }
                 else if (clientTimeZoneString == "Mountain"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
-                    /*if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Daylight Time");
-                    }*/
                 }
                 else if (clientTimeZoneString == "Pacific"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-                    /*if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Daylight Time");
-                    }*/
                 }
-            DateTimeOffset selectedDateTimeOffset = new DateTimeOffset(selectedDateTime, TimeSpan.Zero);
-            TimeSpan clientOffset = clientTimeZone.GetUtcOffset(selectedDateTimeOffset);
 
-            if (clientTimeZone.IsDaylightSavingTime(selectedDateTime))
-            {
-                TimeZoneInfo.AdjustmentRule[] rules = clientTimeZone.GetAdjustmentRules();
-                foreach (TimeZoneInfo.AdjustmentRule rule in rules)
-                {
-                    if (rule.DateStart <= selectedDateTime && selectedDateTime < rule.DateEnd)
-                    {
-                        clientOffset += rule.DaylightDelta;
-                        break;
-                    }
-                }
-            }
-
-            clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, clientOffset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
-
+            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
+            clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
             clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
-            }
+        }
 
             private void CandidateComboBox_DropDownClosed(object sender, EventArgs e)
             {
@@ -288,52 +259,47 @@ namespace Sendout_Calendar_Invite_Project
             
                 if (candidateTimeZoneString == "Eastern"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                   /* if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
-                    }*/
                 }
                 else if (candidateTimeZoneString == "Central"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                    /*if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Daylight Time");
-                    }*/
                 }
                 else if (candidateTimeZoneString == "Mountain"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
-                   /* if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Daylight Time");
-                    }*/
                 }
                 else if (candidateTimeZoneString == "Pacific"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-                   /* if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Daylight Time");
-                    }*/
                 }
 
+            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
+            candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
+            candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
+        }
+        public static DateTimeOffset DaylightConvert(DateTime selectedDateTime, TimeZoneInfo timeZone)
+        {
             DateTimeOffset selectedDateTimeOffset = new DateTimeOffset(selectedDateTime, TimeSpan.Zero);
-            TimeSpan candidateOffset = candidateTimeZone.GetUtcOffset(selectedDateTimeOffset);
+            TimeSpan offset = timeZone.GetUtcOffset(selectedDateTimeOffset);
 
-            if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime))
+            if (timeZone.IsDaylightSavingTime(selectedDateTime))
             {
-                TimeZoneInfo.AdjustmentRule[] rules = candidateTimeZone.GetAdjustmentRules();
+                TimeZoneInfo.AdjustmentRule[] rules = timeZone.GetAdjustmentRules();
                 foreach (TimeZoneInfo.AdjustmentRule rule in rules)
                 {
                     if (rule.DateStart <= selectedDateTime && selectedDateTime < rule.DateEnd)
                     {
-                        candidateOffset += rule.DaylightDelta;
+                        offset += rule.DaylightDelta;
                         break;
                     }
                 }
             }
 
-            candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, candidateOffset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
-            candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
-            }
-
-            private string ConvertTimeZone(DateTime dateTime, TimeZoneInfo targetZone)
+            return new DateTimeOffset(selectedDateTime, offset);
+        }
+        private string ConvertTimeZone(DateTime dateTime, TimeZoneInfo targetZone)
             {
             TimeZoneInfo localZone = TimeZoneInfo.Local;
+            
+            DateTimeOffset selectedDateTimeOffset = DaylightConvert(dateTime, localZone);
+            localZone = TimeZoneInfo.CreateCustomTimeZone(localZone.Id, selectedDateTimeOffset.Offset, localZone.DisplayName, localZone.StandardName);
             DateTime convertedTime = TimeZoneInfo.ConvertTime(dateTime, localZone, targetZone);
             
             string formattedTime = convertedTime.ToString("h:mm tt");
@@ -342,17 +308,18 @@ namespace Sendout_Calendar_Invite_Project
 
         private void DateTimePicker_ValueChanged(object sender, EventArgs e)
             {
-            // DateTimePicker dateTimePicker = new DateTimePicker();
-            //DateTime selectedDateTime = dateTimePicker.Value;
+           
 
             DateTimePicker dateTimePicker = (DateTimePicker)sender;
 
             selectedDateTime = dateTimePicker.Value ?? DateTime.Now;
 
-            string selectedDate = selectedDateTime.ToLongDateString();
-                
-               // dateString = selectedDate.ToString("dddd MMMM d");
-                //startTimeString = selectedDateTime.Value.ToString("h:mm tt");
+            string selectedDate = selectedDateTime.ToString("dddd, dd MMMM");
+
+            // DateTimePicker dateTimePicker = new DateTimePicker();
+            //DateTime selectedDateTime = dateTimePicker.Value;
+            // dateString = selectedDate.ToString("dddd MMMM d");
+            //startTimeString = selectedDateTime.Value.ToString("h:mm tt");
 
         }
 
