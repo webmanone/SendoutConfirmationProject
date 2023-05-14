@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Primitives;
 using Outlook = Microsoft.Office.Interop.Outlook;
+using System.Globalization;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -40,8 +41,8 @@ namespace Sendout_Calendar_Invite_Project
             DateTimePicker dateTimePicker = new DateTimePicker();
             dateTimePicker.Value = DateTime.Now;
         }
-            private void Preview_Click(object sender, RoutedEventArgs e)
-            {
+        private void Preview_Click(object sender, RoutedEventArgs e)
+        {
             // Handle preview button click
 
             string eventTitle = null;
@@ -93,19 +94,17 @@ namespace Sendout_Calendar_Invite_Project
             if (clientTimeZone == null)
             {
                 clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                if (clientTimeZone.IsDaylightSavingTime(selectedDateTime))
-                {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
+                clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
+                clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
             }
 
             if (candidateTimeZone == null)
             {
                 candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime))
-                {
-                    candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
+                candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
+                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
             }
 
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
@@ -118,11 +117,14 @@ namespace Sendout_Calendar_Invite_Project
                 differentTimeZone += $"{clientTime} {clientTimeZoneString}";
             }
 
+            if (invite.AdditionalInfo != "") {
+                invite.AdditionalInfo = $"{invite.AdditionalInfo} \n \n";
+            }
 
             if (selectedTemplate == "First stage phone call")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
@@ -130,26 +132,26 @@ namespace Sendout_Calendar_Invite_Project
                     $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo} \n \n" +
+                    $"{invite.AdditionalInfo}" +
                     $"Best regards, \n";
 
             } else if (selectedTemplate == "Teams interview")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
                     $"Time: {differentTimeZone} \n \n" +
-                    $"Please join the Teams meeting at the arranged time \n \n" +
+                    $"Please join the Teams meeting at the arranged time. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo} \n \n" +
+                    $"{invite.AdditionalInfo}" +
                     $"Best regards, \n";
             } else if (selectedTemplate == "In-person interview")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
@@ -157,12 +159,12 @@ namespace Sendout_Calendar_Invite_Project
                     $"{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached at {candidate.Phone} or {candidate.Email}. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo} \n \n" +
+                    $"{invite.AdditionalInfo}" +
                     $"Best regards, \n";
             } else if (selectedTemplate == "Other")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}. \n \n" +
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
@@ -170,7 +172,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo} \n \n" +
+                    $"{invite.AdditionalInfo}" +
                     $"Best regards, \n";
             }
 
@@ -239,48 +241,21 @@ namespace Sendout_Calendar_Invite_Project
                
                 if (clientTimeZoneString == "Eastern"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                   /* if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)) {
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
-                    }*/
                 }
                 else if (clientTimeZoneString == "Central"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                    /*if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Daylight Time");
-                    }*/
                 }
                 else if (clientTimeZoneString == "Mountain"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
-                    /*if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Daylight Time");
-                    }*/
                 }
                 else if (clientTimeZoneString == "Pacific"){
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-                    /*if (clientTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Daylight Time");
-                    }*/
                 }
-            DateTimeOffset selectedDateTimeOffset = new DateTimeOffset(selectedDateTime, TimeSpan.Zero);
-            TimeSpan clientOffset = clientTimeZone.GetUtcOffset(selectedDateTimeOffset);
 
-            if (clientTimeZone.IsDaylightSavingTime(selectedDateTime))
-            {
-                TimeZoneInfo.AdjustmentRule[] rules = clientTimeZone.GetAdjustmentRules();
-                foreach (TimeZoneInfo.AdjustmentRule rule in rules)
-                {
-                    if (rule.DateStart <= selectedDateTime && selectedDateTime < rule.DateEnd)
-                    {
-                        clientOffset += rule.DaylightDelta;
-                        break;
-                    }
-                }
-            }
-
-            clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, clientOffset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
-
+            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
+            clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
             clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
-            }
+        }
 
             private void CandidateComboBox_DropDownClosed(object sender, EventArgs e)
             {
@@ -288,72 +263,58 @@ namespace Sendout_Calendar_Invite_Project
             
                 if (candidateTimeZoneString == "Eastern"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                   /* if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Daylight Time");
-                    }*/
                 }
                 else if (candidateTimeZoneString == "Central"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                    /*if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Daylight Time");
-                    }*/
                 }
                 else if (candidateTimeZoneString == "Mountain"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
-                   /* if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Daylight Time");
-                    }*/
                 }
                 else if (candidateTimeZoneString == "Pacific"){
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-                   /* if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime)){
-                        candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Daylight Time");
-                    }*/
                 }
 
+            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
+            candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
+            candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
+        }
+        public static DateTimeOffset DaylightConvert(DateTime selectedDateTime, TimeZoneInfo timeZone)
+        {
             DateTimeOffset selectedDateTimeOffset = new DateTimeOffset(selectedDateTime, TimeSpan.Zero);
-            TimeSpan candidateOffset = candidateTimeZone.GetUtcOffset(selectedDateTimeOffset);
+            TimeSpan offset = timeZone.GetUtcOffset(selectedDateTimeOffset);
 
-            if (candidateTimeZone.IsDaylightSavingTime(selectedDateTime))
+            if (timeZone.IsDaylightSavingTime(selectedDateTime))
             {
-                TimeZoneInfo.AdjustmentRule[] rules = candidateTimeZone.GetAdjustmentRules();
+                TimeZoneInfo.AdjustmentRule[] rules = timeZone.GetAdjustmentRules();
                 foreach (TimeZoneInfo.AdjustmentRule rule in rules)
                 {
                     if (rule.DateStart <= selectedDateTime && selectedDateTime < rule.DateEnd)
                     {
-                        candidateOffset += rule.DaylightDelta;
+                        offset += rule.DaylightDelta;
                         break;
                     }
                 }
             }
 
-            candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, candidateOffset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
-            candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
-            }
-
-            private string ConvertTimeZone(DateTime dateTime, TimeZoneInfo targetZone)
+            return new DateTimeOffset(selectedDateTime, offset);
+        }
+        private string ConvertTimeZone(DateTime dateTime, TimeZoneInfo targetZone)
             {
             TimeZoneInfo localZone = TimeZoneInfo.Local;
+            
+            DateTimeOffset selectedDateTimeOffset = DaylightConvert(dateTime, localZone);
+            localZone = TimeZoneInfo.CreateCustomTimeZone(localZone.Id, selectedDateTimeOffset.Offset, localZone.DisplayName, localZone.StandardName);
             DateTime convertedTime = TimeZoneInfo.ConvertTime(dateTime, localZone, targetZone);
             
-            string formattedTime = convertedTime.ToString("h:mm tt");
+            string formattedTime = convertedTime.ToString("h:mm tt", new CultureInfo("en-US"));
             return formattedTime;
             }
 
         private void DateTimePicker_ValueChanged(object sender, EventArgs e)
             {
-            // DateTimePicker dateTimePicker = new DateTimePicker();
-            //DateTime selectedDateTime = dateTimePicker.Value;
-
             DateTimePicker dateTimePicker = (DateTimePicker)sender;
-
             selectedDateTime = dateTimePicker.Value ?? DateTime.Now;
-
-            string selectedDate = selectedDateTime.ToLongDateString();
-                
-               // dateString = selectedDate.ToString("dddd MMMM d");
-                //startTimeString = selectedDateTime.Value.ToString("h:mm tt");
-
+            selectedDate = selectedDateTime.ToString("dddd, MMMM dd", new CultureInfo("en-US"));
         }
 
     }
