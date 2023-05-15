@@ -109,7 +109,7 @@ namespace Sendout_Calendar_Invite_Project
 
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
 
-            if (client.TimeZone != candidate.TimeZone)
+            if (clientTimeZoneString != candidateTimeZoneString)
             {
                 differentTimeZone += $"{clientTime} {clientTimeZoneString}/{candidateTime} {candidateTimeZoneString}";
             } else
@@ -124,7 +124,7 @@ namespace Sendout_Calendar_Invite_Project
             if (selectedTemplate == "First stage phone call")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
+                    $"I'm pleased to confirm the following call at {differentTimeZone} on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
@@ -138,7 +138,7 @@ namespace Sendout_Calendar_Invite_Project
             } else if (selectedTemplate == "Teams interview")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
+                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone} on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
@@ -151,7 +151,7 @@ namespace Sendout_Calendar_Invite_Project
             } else if (selectedTemplate == "In-person interview")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
+                    $"I'm pleased to confirm the following in-person interview at {differentTimeZone} on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" +
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
@@ -164,7 +164,7 @@ namespace Sendout_Calendar_Invite_Project
             } else if (selectedTemplate == "Other")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone}  on {selectedDate}. \n \n" +
+                    $"I'm pleased to confirm the following interview at {differentTimeZone} on {selectedDate}. \n \n" +
                     $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
