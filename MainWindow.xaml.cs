@@ -35,6 +35,7 @@ namespace Sendout_Calendar_Invite_Project
         private string startTimeString;
         private string clientTimeZoneString = "Eastern";
         private string candidateTimeZoneString = "Eastern";
+        private string location = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -82,6 +83,7 @@ namespace Sendout_Calendar_Invite_Project
             CalendarInvite invite = new CalendarInvite
             {
                 EventTitle = eventTitle,
+                Location = location,
                 EventType = selectedTemplate,
                 Date = selectedDate,
                 StartTime = selectedDateTime,
@@ -135,6 +137,8 @@ namespace Sendout_Calendar_Invite_Project
                     $"{invite.AdditionalInfo}" +
                     $"Best regards, \n";
 
+                invite.Location = candidatePhone;
+
             } else if (selectedTemplate == "Teams interview")
             {
                 emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
@@ -156,7 +160,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"Candidate: {candidate.Name} \n" +
                     $"Date: {invite.Date} \n" +
                     $"Time: {differentTimeZone} \n \n" +
-                    $"{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached at {candidate.Phone} or {candidate.Email}. \n \n" +
+                    $"{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}. \n \n" +
                     $"I'm looking forward to discussing feedback following the call. \n \n" +
                     $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
                     $"{invite.AdditionalInfo}" +
@@ -187,7 +191,7 @@ namespace Sendout_Calendar_Invite_Project
             Outlook.Recipient candidateRecipient = appointment.Recipients.Add(candidate.Email);
             candidateRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
             appointment.Subject = eventTitle;
-            appointment.Location = "Microsoft Teams";
+            appointment.Location = invite.Location;
             appointment.Body = emailTemplate;
             DateTime start = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
             DateTime end = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
@@ -232,7 +236,17 @@ namespace Sendout_Calendar_Invite_Project
             {
         
                 selectedTemplate = TemplateComboBox.Text;    
-            }
+
+                if (selectedTemplate == "First stage phone call" || selectedTemplate == "Other"){
+                location = CandidatePhoneTextBox.Text;
+
+                } else if (selectedTemplate == "Teams interview"){
+                location = "Microsoft Teams";
+                }
+                else if (selectedTemplate == "In-person interview"){
+                location = selectedTemplate;
+                }
+        }
 
             private void ClientComboBox_DropDownClosed(object sender, EventArgs e)
             {
