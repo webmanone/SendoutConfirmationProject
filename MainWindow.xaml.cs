@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Primitives;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Globalization;
+using Newtonsoft.Json;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -67,7 +69,7 @@ namespace Sendout_Calendar_Invite_Project
                 Name = clientName,
                 Email = clientEmail,
                 Company = clientCompany,
-                TimeZone = clientTimeZone
+                TimeZone = clientTimeZoneString
             };
 
             // Create candidate object
@@ -76,7 +78,7 @@ namespace Sendout_Calendar_Invite_Project
                 Name = candidateName,
                 Email = candidateEmail,
                 Phone = candidatePhone,
-                TimeZone = candidateTimeZone
+                TimeZone = candidateTimeZoneString
             };
 
             // Create calendar invite object using client and candidate objects
@@ -204,8 +206,35 @@ namespace Sendout_Calendar_Invite_Project
 
             private void SaveClient_Click(object sender, RoutedEventArgs e)
             {
-                // Handle save client button click
+            // Create a new instance of the Client class with the entered information
+            Client client = new Client
+            {
+                Name = ClientNameTextBox.Text,
+                Email = ClientEmailTextBox.Text,
+                Company = ClientCompanyTextBox.Text,
+                TimeZone = clientTimeZoneString
+            };
+
+            // Serialize the client object to JSON
+            string json = JsonConvert.SerializeObject(client);
+
+            // Define the file path to save the client information
+            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
+
+            try
+            {
+                // Write the JSON string to a file
+                File.WriteAllText(filePath, json);
+
+                // Show a success message
+                System.Windows.MessageBox.Show("Client information saved successfully.");
             }
+            catch (Exception ex)
+            {
+                // Handle any potential exceptions that occurred during the save operation
+                System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
+            }
+        }
 
             private void LoadClient_Click(object sender, RoutedEventArgs e)
             {
