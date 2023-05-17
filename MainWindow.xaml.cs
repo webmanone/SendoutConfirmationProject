@@ -209,22 +209,23 @@ namespace Sendout_Calendar_Invite_Project
             // Create a new instance of the Client class with the entered information
             Client client = new Client
             {
+                Id = Guid.NewGuid().ToString(),  // Generate a unique identifier for the client
                 Name = ClientNameTextBox.Text,
                 Email = ClientEmailTextBox.Text,
                 Company = ClientCompanyTextBox.Text,
                 TimeZone = clientTimeZoneString
             };
 
-            // Serialize the client object to JSON
-            string json = JsonConvert.SerializeObject(client);
-
             // Define the file path to save the client information
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
 
             try
             {
-                // Write the JSON string to a file
-                File.WriteAllText(filePath, json);
+                // Serialize the new client to JSON
+                string json = JsonConvert.SerializeObject(client);
+
+                // Append the JSON string to the existing file
+                File.AppendAllText(filePath, json + Environment.NewLine);
 
                 // Show a success message
                 System.Windows.MessageBox.Show("Client information saved successfully.");
