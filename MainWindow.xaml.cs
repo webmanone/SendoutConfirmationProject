@@ -18,6 +18,9 @@ using Xceed.Wpf.Toolkit.Primitives;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Globalization;
 using Newtonsoft.Json;
+using System.Data;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -238,9 +241,35 @@ namespace Sendout_Calendar_Invite_Project
         }
 
             private void LoadClient_Click(object sender, RoutedEventArgs e)
+        {
+            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
+
+            try
             {
-                // Handle load client button click
+                // Read the JSON data from the file
+                string jsonData = File.ReadAllText(filePath);
+
+                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Deserialize each JSON object and add it to the list of clients
+                List<Client> clientsList = new List<Client>();
+                foreach (string json in jsonLines)
+                {
+                    Client client = JsonConvert.DeserializeObject<Client>(json);
+                    clientsList.Add(client);
+                }
+
+                DataViewer dataViewer = new DataViewer(clientsList);  // Create an instance of the DataViewer window
+                // Set the ItemsSource of the DataGrid
+
+                dataViewer.ShowDialog();
             }
+            catch (Exception ex)
+            {
+                // Handle any potential exceptions
+                System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
+            }
+        }
 
             private void SaveCandidate_Click(object sender, RoutedEventArgs e)
             {

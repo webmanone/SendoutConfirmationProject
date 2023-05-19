@@ -1,0 +1,19 @@
+﻿<Window x:Class="Sendout_Calendar_Invite_Project.DataViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sendout_Calendar_Invite_Project"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800">
+    <Grid>
+        <Label Content="Please select the data you want to load:" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Top"/>
+        <DataGrid x:Name="dataViewer" CanUserAddRows="False" AutoGenerateColumns="False" HorizontalAlignment="Center" Height="300" Margin="0,100,0,0" VerticalAlignment="Top" Width="600" ItemsSource="{Binding ClientsList}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>
