@@ -19,12 +19,15 @@ namespace Sendout_Calendar_Invite_Project
     /// </summary>
     public partial class DataViewer : Window
     {
+        public List<Client> ClientsList { get; set; }
         public DataViewer(List<Client> clients)
         {
             InitializeComponent();
 
             // Set the ItemsSource of the DataGrid to the passed-in clients
-            dataViewer.ItemsSource = clients;
+            ClientsList = clients;
+            //dataViewer.ItemsSource = clients;
+            DataContext = this;
         }
 
         public DataViewer(List<Candidate> candidates)

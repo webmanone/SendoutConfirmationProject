@@ -7,10 +7,13 @@
         mc:Ignorable="d"
         Title="Window1" Height="450" Width="800">
     <Grid>
-        <Label Content="Label" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
-        <Label Content="Label" HorizontalAlignment="Center" Margin="0,50,0,0" VerticalAlignment="Top"/>
-        <DataGrid x:Name="dataViewer" HorizontalAlignment="Center" Height="300" Margin="0,100,0,0" VerticalAlignment="Top" Width="600" d:ItemsSource="{d:SampleData ItemCount=5}"/>
-        
+        <Label Content="Please select the data you want to load:" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Top"/>
+        <DataGrid x:Name="dataViewer" CanUserAddRows="False" AutoGenerateColumns="False" HorizontalAlignment="Center" Height="300" Margin="0,100,0,0" VerticalAlignment="Top" Width="600" ItemsSource="{Binding ClientsList}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
     </Grid>
 </Window>

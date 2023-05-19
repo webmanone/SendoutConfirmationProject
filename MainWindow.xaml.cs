@@ -19,6 +19,8 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Globalization;
 using Newtonsoft.Json;
 using System.Data;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -245,15 +247,20 @@ namespace Sendout_Calendar_Invite_Project
             try
             {
                 // Read the JSON data from the file
-                string json = File.ReadAllText(filePath);
+                string jsonData = File.ReadAllText(filePath);
 
-                // Deserialize the JSON data to a list of clients
-                List<Client> clientsList = JsonConvert.DeserializeObject<List<Client>>(json);
-                
-                DataViewer dataViewer = new DataViewer();  // Create an instance of the DataViewer window
+                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Deserialize each JSON object and add it to the list of clients
+                List<Client> clientsList = new List<Client>();
+                foreach (string json in jsonLines)
+                {
+                    Client client = JsonConvert.DeserializeObject<Client>(json);
+                    clientsList.Add(client);
+                }
+
+                DataViewer dataViewer = new DataViewer(clientsList);  // Create an instance of the DataViewer window
                 // Set the ItemsSource of the DataGrid
-                
-                //dataViewer.ItemsSource = clientsList;
 
                 dataViewer.ShowDialog();
             }

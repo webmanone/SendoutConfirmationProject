@@ -40,3 +40,5 @@ C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-win
 C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Interop.Microsoft.Office.Interop.Outlook.dll
 C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\Sendout Calendar Invite Project.csproj.ResolveComReference.cache
 C:\Users\lukem\source\repos\Sendout Calendar Invite Project\bin\Debug\net6.0-windows\Newtonsoft.Json.dll
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\DataViewer.g.cs
+C:\Users\lukem\source\repos\Sendout Calendar Invite Project\obj\Debug\net6.0-windows\DataViewer.baml
