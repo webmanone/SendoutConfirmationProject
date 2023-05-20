@@ -263,6 +263,12 @@ namespace Sendout_Calendar_Invite_Project
                 // Set the ItemsSource of the DataGrid
 
                 dataViewer.ShowDialog();
+
+                ClientNameTextBox.Text = dataViewer.SelectedClientName;
+                ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
+                ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
+               // ClientComboBox.SelectedValuePath = "TimeZone";
+                ClientComboBox.SelectedItem = dataViewer.SelectedClientTimeZone;
             }
             catch (Exception ex)
             {

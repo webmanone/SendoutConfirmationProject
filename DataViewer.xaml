@@ -8,7 +8,7 @@
         Title="Window1" Height="450" Width="800">
     <Grid>
         <Label Content="Please select the data you want to load:" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Top"/>
-        <DataGrid x:Name="dataViewer" CanUserAddRows="False" AutoGenerateColumns="False" HorizontalAlignment="Center" Height="300" Margin="0,100,0,0" VerticalAlignment="Top" Width="600" ItemsSource="{Binding ClientsList}">
+        <DataGrid x:Name="dataViewer" MouseDoubleClick="DataGrid_MouseDoubleClick" CanUserAddRows="False" AutoGenerateColumns="False" HorizontalAlignment="Center" Height="300" Margin="0,100,0,0" VerticalAlignment="Top" Width="600" ItemsSource="{Binding ClientsList}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
                 <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
