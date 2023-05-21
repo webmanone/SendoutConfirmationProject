@@ -267,7 +267,6 @@ namespace Sendout_Calendar_Invite_Project
                 ClientNameTextBox.Text = dataViewer.SelectedClientName;
                 ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
                 ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
-               //ClientComboBox.SelectedValuePath = "TimeZone";
                 ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
             }
             catch (Exception ex)
@@ -279,13 +278,72 @@ namespace Sendout_Calendar_Invite_Project
 
             private void SaveCandidate_Click(object sender, RoutedEventArgs e)
             {
-                // Handle save candidate button click
+            // Create a new instance of the Client class with the entered information
+            Candidate candidate = new Candidate
+            {
+                Id = Guid.NewGuid().ToString(),  // Generate a unique identifier for the client
+                Name = CandidateNameTextBox.Text,
+                Email = CandidateEmailTextBox.Text,
+                Phone = CandidatePhoneTextBox.Text,
+                TimeZone = candidateTimeZoneString
+            };
+
+            // Define the file path to save the client information
+            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
+
+            try
+            {
+                // Serialize the new client to JSON
+                string json = JsonConvert.SerializeObject(candidate);
+
+                // Append the JSON string to the existing file
+                File.AppendAllText(filePath, json + Environment.NewLine);
+
+                // Show a success message
+                System.Windows.MessageBox.Show("Candidate information saved successfully.");
             }
+            catch (Exception ex)
+            {
+                // Handle any potential exceptions that occurred during the save operation
+                System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
+            }
+        }
 
             private void LoadCandidate_Click(object sender, RoutedEventArgs e)
             {
-                // Handle load candidate button click
+            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
+
+            try
+            {
+                // Read the JSON data from the file
+                string jsonData = File.ReadAllText(filePath);
+
+                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Deserialize each JSON object and add it to the list of clients
+                List<Candidate> candidatesList = new List<Candidate>();
+                foreach (string json in jsonLines)
+                {
+                    Candidate candidate = JsonConvert.DeserializeObject<Candidate>(json);
+                    candidatesList.Add(candidate);
+                }
+
+                DataViewer dataViewer = new DataViewer(candidatesList);  // Create an instance of the DataViewer window
+                // Set the ItemsSource of the DataGrid
+
+                dataViewer.ShowDialog();
+
+                CandidateNameTextBox.Text = dataViewer.SelectedCandidateName;
+                CandidateEmailTextBox.Text = dataViewer.SelectedCandidateEmail;
+                CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
+                CandidateComboBox.Text = dataViewer.SelectedCandidateTimeZone;
             }
+            catch (Exception ex)
+            {
+                // Handle any potential exceptions
+                System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
+            }
+        }
 
             private void Edit_Click(object sender, RoutedEventArgs e)
             {
