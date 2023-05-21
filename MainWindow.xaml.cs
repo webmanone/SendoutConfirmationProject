@@ -267,8 +267,8 @@ namespace Sendout_Calendar_Invite_Project
                 ClientNameTextBox.Text = dataViewer.SelectedClientName;
                 ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
                 ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
-               // ClientComboBox.SelectedValuePath = "TimeZone";
-                ClientComboBox.SelectedItem = dataViewer.SelectedClientTimeZone;
+               //ClientComboBox.SelectedValuePath = "TimeZone";
+                ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
             }
             catch (Exception ex)
             {
