@@ -82,3 +82,6 @@ Breakdown:
 
 
 In its current state, the code is very useful to me in my personal job, but there are a number of improvements that need to be made before it could be shippable commercially and used by other recruiters.
+
+### In development
+In my development branch, I'm currently learning how to make the app work with Microsoft Graph API. This will allow the user to create a calendar invite even if no outlook app is installed, as it will prompt them to sign in, grant permission and then display the calendar invite.
