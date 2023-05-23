@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Identity.Client;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -41,9 +42,20 @@ namespace Sendout_Calendar_Invite_Project
         private string clientTimeZoneString = "Eastern";
         private string candidateTimeZoneString = "Eastern";
         private string location = "";
+
         public MainWindow()
         {
             InitializeComponent();
+
+            string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
+            string authority = "https://login.microsoftonline.com/common";
+            string redirectUri = "https://localhost/8080";
+            IPublicClientApplication app = PublicClientApplicationBuilder
+                .Create(clientId)
+                .WithAuthority(authority)
+                .WithRedirectUri(redirectUri)
+                .Build();
+
             DateTimePicker dateTimePicker = new DateTimePicker();
             dateTimePicker.Value = DateTime.Now;
         }
