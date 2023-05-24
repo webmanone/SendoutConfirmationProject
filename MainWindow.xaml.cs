@@ -42,15 +42,16 @@ namespace Sendout_Calendar_Invite_Project
         private string clientTimeZoneString = "Eastern";
         private string candidateTimeZoneString = "Eastern";
         private string location = "";
+        private IPublicClientApplication app;
 
         public MainWindow()
         {
             InitializeComponent();
-
+            //Graph API Initialisation
             string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
             string authority = "https://login.microsoftonline.com/common";
             string redirectUri = "https://localhost/8080";
-            IPublicClientApplication app = PublicClientApplicationBuilder
+            app = PublicClientApplicationBuilder
                 .Create(clientId)
                 .WithAuthority(authority)
                 .WithRedirectUri(redirectUri)
@@ -196,7 +197,12 @@ namespace Sendout_Calendar_Invite_Project
                     $"{invite.AdditionalInfo}" +
                     $"Best regards, \n";
             }
+            //getting permissions for Graph API
 
+            PerformAuthentication();
+
+            string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
+            System.Diagnostics.Process.Start(inviteUrl);
             // create a new appointment item
             Outlook.Application outlookApp = new Outlook.Application();
             Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
@@ -219,7 +225,13 @@ namespace Sendout_Calendar_Invite_Project
             appointment.Display(true); //need to edit as causes an error if calendar invite is already up
         }
 
-            private void SaveClient_Click(object sender, RoutedEventArgs e)
+        private async Task PerformAuthentication()
+        {
+            string[] scopes = {"Calendars.ReadWrite" };
+            AuthenticationResult result = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+        }
+
+        private void SaveClient_Click(object sender, RoutedEventArgs e)
             {
             // Create a new instance of the Client class with the entered information
             Client client = new Client
