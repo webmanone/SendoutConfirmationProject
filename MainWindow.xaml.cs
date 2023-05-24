@@ -22,6 +22,8 @@ using System.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Identity.Client;
+using System.Net.Mail;
+using Microsoft.Graph;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -203,31 +205,57 @@ namespace Sendout_Calendar_Invite_Project
 
             string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
             System.Diagnostics.Process.Start(inviteUrl);
-            // create a new appointment item
-            Outlook.Application outlookApp = new Outlook.Application();
-            Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
 
-            // set the properties of the appointment
-            appointment.MeetingStatus = Outlook.OlMeetingStatus.olMeeting;
-            Outlook.Recipient clientRecipient = appointment.Recipients.Add(client.Email);
-            clientRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
-            Outlook.Recipient candidateRecipient = appointment.Recipients.Add(candidate.Email);
-            candidateRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
-            appointment.Subject = eventTitle;
-            appointment.Location = invite.Location;
-            appointment.Body = emailTemplate;
-            DateTime start = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
-            DateTime end = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
 
-            appointment.Start = start;
-            appointment.End = end;
+            // Create an instance of GraphServiceClient
+            /*
+             GraphServiceClient graphClient = new GraphServiceClient(authProvider);
 
-            appointment.Display(true); //need to edit as causes an error if calendar invite is already up
+             // Create the event object
+             
+             var newEvent = new Event
+             {
+                 Subject = eventTitle,
+                 Location = new Location { DisplayName = invite.Location },
+                 Start = new DateTimeTimeZone { DateTime = invite.StartTime.ToString("o"), TimeZone = clientTimeZone },
+                 End = new DateTimeTimeZone { DateTime = invite.EndTime.ToString("o"), TimeZone = clientTimeZone },
+                 Body = new ItemBody { Content = emailTemplate, ContentType = BodyType.Text },
+                 Attendees = new List<Attendee>
+                 {
+         new Attendee { EmailAddress = new EmailAddress { Address = client.Email }, Type = AttendeeType.Required },
+         new Attendee { EmailAddress = new EmailAddress { Address = candidate.Email }, Type = AttendeeType.Required }
+     }
+             };
+             /*
+             // Create the event on the user's calendar
+             await graphClient.Users["user-id-or-principal-name"].Calendar.Events.Request().AddAsync(newEvent);
+             // create a new appointment item in the outlook app
+             /*
+             Outlook.Application outlookApp = new Outlook.Application();
+             Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
+
+             // set the properties of the appointment
+             appointment.MeetingStatus = Outlook.OlMeetingStatus.olMeeting;
+             Outlook.Recipient clientRecipient = appointment.Recipients.Add(client.Email);
+             clientRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
+             Outlook.Recipient candidateRecipient = appointment.Recipients.Add(candidate.Email);
+             candidateRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
+             appointment.Subject = eventTitle;
+             appointment.Location = invite.Location;
+             appointment.Body = emailTemplate;
+             DateTime start = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
+             DateTime end = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
+
+             appointment.Start = start;
+             appointment.End = end;
+
+             appointment.Display(true); //need to edit as causes an error if calendar invite is already up
+             */
         }
 
         private async Task PerformAuthentication()
         {
-            string[] scopes = {"Calendars.ReadWrite" };
+            string[] scopes = {"Calendars.ReadWrite"};
             AuthenticationResult result = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
         }
 
