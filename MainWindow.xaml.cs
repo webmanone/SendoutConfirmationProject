@@ -24,6 +24,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Identity.Client;
 using System.Net.Mail;
 using Microsoft.Graph;
+using Microsoft.Graph.Authentication;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -49,15 +50,6 @@ namespace Sendout_Calendar_Invite_Project
         public MainWindow()
         {
             InitializeComponent();
-            //Graph API Initialisation
-            string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
-            string authority = "https://login.microsoftonline.com/common";
-            string redirectUri = "https://localhost/8080";
-            app = PublicClientApplicationBuilder
-                .Create(clientId)
-                .WithAuthority(authority)
-                .WithRedirectUri(redirectUri)
-                .Build();
 
             DateTimePicker dateTimePicker = new DateTimePicker();
             dateTimePicker.Value = DateTime.Now;
@@ -203,16 +195,12 @@ namespace Sendout_Calendar_Invite_Project
 
             PerformAuthentication();
 
+
+
             string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
             System.Diagnostics.Process.Start(inviteUrl);
 
-
-            // Create an instance of GraphServiceClient
-            /*
-             GraphServiceClient graphClient = new GraphServiceClient(authProvider);
-
              // Create the event object
-             
              var newEvent = new Event
              {
                  Subject = eventTitle,
@@ -226,7 +214,7 @@ namespace Sendout_Calendar_Invite_Project
          new Attendee { EmailAddress = new EmailAddress { Address = candidate.Email }, Type = AttendeeType.Required }
      }
              };
-             /*
+             
              // Create the event on the user's calendar
              await graphClient.Users["user-id-or-principal-name"].Calendar.Events.Request().AddAsync(newEvent);
              // create a new appointment item in the outlook app
@@ -255,8 +243,22 @@ namespace Sendout_Calendar_Invite_Project
 
         private async Task PerformAuthentication()
         {
-            string[] scopes = {"Calendars.ReadWrite"};
-            AuthenticationResult result = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+            //Graph API Initialisation
+            string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
+            string authority = "https://login.microsoftonline.com/common";
+            string redirectUri = "https://localhost/8080";
+            string[] scopes = { "Calendars.ReadWrite" };
+            app = PublicClientApplicationBuilder
+                .Create(clientId)
+                .WithAuthority(authority)
+                .WithRedirectUri(redirectUri)
+                .Build();
+
+            AuthenticationResult authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+
+            // Acquire an access token for the Microsoft Graph API
+            ClientCredentialProvider authProvider = new ClientCredentialProvider(app);
+            GraphServiceClient graphClient = new GraphServiceClient(authProvider);
         }
 
         private void SaveClient_Click(object sender, RoutedEventArgs e)
