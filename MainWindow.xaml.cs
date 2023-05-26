@@ -25,6 +25,9 @@ using Microsoft.Identity.Client;
 using System.Net.Mail;
 using Microsoft.Graph;
 using Microsoft.Graph.Authentication;
+using System.ComponentModel;
+using System.Net.Http;
+
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -45,7 +48,6 @@ namespace Sendout_Calendar_Invite_Project
         private string clientTimeZoneString = "Eastern";
         private string candidateTimeZoneString = "Eastern";
         private string location = "";
-        private IPublicClientApplication app;
 
         public MainWindow()
         {
@@ -193,30 +195,13 @@ namespace Sendout_Calendar_Invite_Project
             }
             //getting permissions for Graph API
 
-            PerformAuthentication();
+            PerformAuthentication(eventTitle, invite.Location, clientTimeZone, emailTemplate, client.Email, candidate.Email, invite.StartTime);
 
 
 
             string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
             System.Diagnostics.Process.Start(inviteUrl);
 
-             // Create the event object
-             var newEvent = new Event
-             {
-                 Subject = eventTitle,
-                 Location = new Location { DisplayName = invite.Location },
-                 Start = new DateTimeTimeZone { DateTime = invite.StartTime.ToString("o"), TimeZone = clientTimeZone },
-                 End = new DateTimeTimeZone { DateTime = invite.EndTime.ToString("o"), TimeZone = clientTimeZone },
-                 Body = new ItemBody { Content = emailTemplate, ContentType = BodyType.Text },
-                 Attendees = new List<Attendee>
-                 {
-         new Attendee { EmailAddress = new EmailAddress { Address = client.Email }, Type = AttendeeType.Required },
-         new Attendee { EmailAddress = new EmailAddress { Address = candidate.Email }, Type = AttendeeType.Required }
-     }
-             };
-             
-             // Create the event on the user's calendar
-             await graphClient.Users["user-id-or-principal-name"].Calendar.Events.Request().AddAsync(newEvent);
              // create a new appointment item in the outlook app
              /*
              Outlook.Application outlookApp = new Outlook.Application();
@@ -241,27 +226,60 @@ namespace Sendout_Calendar_Invite_Project
              */
         }
 
-        private async Task PerformAuthentication()
+        private async Task PerformAuthentication(string eventTitle, string location, string clientTimeZone, string emailTemplate, string clientEmail, string candidateEmail, CalendarInvite invite)
         {
             //Graph API Initialisation
             string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
+            string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
+            //string tenantId = "ad479f1c-7ac4-4f58-93e9-67c0d9b6dc0c";
             string authority = "https://login.microsoftonline.com/common";
-            string redirectUri = "https://localhost/8080";
+            //string redirectUri = "https://localhost/8080";
             string[] scopes = { "Calendars.ReadWrite" };
-            app = PublicClientApplicationBuilder
+
+            IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
                 .Create(clientId)
+                .WithClientSecret(clientSecret)
                 .WithAuthority(authority)
-                .WithRedirectUri(redirectUri)
                 .Build();
 
-            AuthenticationResult authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+            AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
 
-            // Acquire an access token for the Microsoft Graph API
-            ClientCredentialProvider authProvider = new ClientCredentialProvider(app);
-            GraphServiceClient graphClient = new GraphServiceClient(authProvider);
+
+            // Create the event object
+            var newEvent = new
+            {
+                subject = eventTitle,
+                location = new { displayName = location },
+                start = new { dateTime = invite.StartTime.ToString("o"), timeZone = clientTimeZone },
+                end = new { dateTime = invite.EndTime.ToString("o"), timeZone = clientTimeZone },
+                body = new { content = emailTemplate, contentType = "Text" },
+                attendees = new[]
+                {
+                    new { emailAddress = new { address = clientEmail }, type = "Required" },
+                    new { emailAddress = new { address = candidateEmail }, type = "Required" }
+                }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(newEvent);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var graphClient = new HttpClient();
+            graphClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+
+            var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Event created successfully
+            }
+            else
+            {
+                // Handle error response
+            }
+
         }
 
-        private void SaveClient_Click(object sender, RoutedEventArgs e)
+            private void SaveClient_Click(object sender, RoutedEventArgs e)
             {
             // Create a new instance of the Client class with the entered information
             Client client = new Client
