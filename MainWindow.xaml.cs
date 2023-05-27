@@ -30,6 +30,7 @@ using System.Net.Http;
 using Microsoft.Office.Interop.Outlook;
 using System.Net.Http.Headers;
 using System.Diagnostics;
+using System.Web;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -257,7 +258,7 @@ namespace Sendout_Calendar_Invite_Project
                     subject = eventTitle,
                     location = new { displayName = location },
                     start = new { dateTime = selectedDateTime.ToString("o") },
-                    end = new { dateTime = selectedDateTime.ToString("o") },
+                    end = new { dateTime = selectedDateTime.AddMinutes(30).ToString("o") },
                     body = new { content = emailTemplate, contentType = "Text" },
                     attendees = new[]
                     {
@@ -272,9 +273,13 @@ namespace Sendout_Calendar_Invite_Project
                 graphClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
                 var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
+                
+                string encodedEventTitle = HttpUtility.UrlEncode(eventTitle);
+                string encodedStartDateTime = HttpUtility.UrlEncode(selectedDateTime.ToString("o"));
+                string encodedEndDateTime = HttpUtility.UrlEncode(selectedDateTime.AddMinutes(30).ToString("o"));
 
-               
-                string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
+                string inviteUrl = $"https://outlook.office.com/calendar/action/compose?subject={encodedEventTitle}&start={encodedStartDateTime}&end={encodedEndDateTime}";
+
                 System.Diagnostics.Process.Start(new ProcessStartInfo
                 {
                     FileName= inviteUrl,
