@@ -27,7 +27,9 @@ using Microsoft.Graph;
 using Microsoft.Graph.Authentication;
 using System.ComponentModel;
 using System.Net.Http;
-
+using Microsoft.Office.Interop.Outlook;
+using System.Net.Http.Headers;
+using System.Diagnostics;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -48,6 +50,7 @@ namespace Sendout_Calendar_Invite_Project
         private string clientTimeZoneString = "Eastern";
         private string candidateTimeZoneString = "Eastern";
         private string location = "";
+        private static readonly HttpClient graphClient = new HttpClient();
 
         public MainWindow()
         {
@@ -195,13 +198,13 @@ namespace Sendout_Calendar_Invite_Project
             }
             //getting permissions for Graph API
 
-            PerformAuthentication(eventTitle, invite.Location, clientTimeZone, emailTemplate, client.Email, candidate.Email, invite.StartTime);
+            PerformAuthentication(eventTitle, invite.Location, emailTemplate, client.Email, candidate.Email, selectedDateTime);
 
-
+            /*
 
             string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
             System.Diagnostics.Process.Start(inviteUrl);
-
+            */
              // create a new appointment item in the outlook app
              /*
              Outlook.Application outlookApp = new Outlook.Application();
@@ -226,55 +229,63 @@ namespace Sendout_Calendar_Invite_Project
              */
         }
 
-        private async Task PerformAuthentication(string eventTitle, string location, string clientTimeZone, string emailTemplate, string clientEmail, string candidateEmail, CalendarInvite invite)
+        private async Task PerformAuthentication(string eventTitle, string location, string emailTemplate, string clientEmail, string candidateEmail, DateTime selectedDateTime)
         {
-            //Graph API Initialisation
-            string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
-            string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
-            //string tenantId = "ad479f1c-7ac4-4f58-93e9-67c0d9b6dc0c";
-            string authority = "https://login.microsoftonline.com/common";
-            //string redirectUri = "https://localhost/8080";
-            string[] scopes = { "Calendars.ReadWrite" };
 
-            IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
-                .Create(clientId)
-                .WithClientSecret(clientSecret)
-                .WithAuthority(authority)
-                .Build();
-
-            AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
-
-
-            // Create the event object
-            var newEvent = new
+            try
             {
-                subject = eventTitle,
-                location = new { displayName = location },
-                start = new { dateTime = invite.StartTime.ToString("o"), timeZone = clientTimeZone },
-                end = new { dateTime = invite.EndTime.ToString("o"), timeZone = clientTimeZone },
-                body = new { content = emailTemplate, contentType = "Text" },
-                attendees = new[]
+                //Graph API Initialisation
+                string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
+                string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
+                //string tenantId = "ad479f1c-7ac4-4f58-93e9-67c0d9b6dc0c";
+                string authority = "https://login.microsoftonline.com/common";
+                //string redirectUri = "https://localhost/8080";
+                string[] scopes = { "https://graph.microsoft.com/.default" };
+
+                IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
+                    .Create(clientId)
+                    .WithClientSecret(clientSecret)
+                    .WithAuthority(authority)
+                    .Build();
+
+                AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+
+
+                // Create the event object
+                var newEvent = new
                 {
-                    new { emailAddress = new { address = clientEmail }, type = "Required" },
-                    new { emailAddress = new { address = candidateEmail }, type = "Required" }
-                }
-            };
+                    subject = eventTitle,
+                    location = new { displayName = location },
+                    start = new { dateTime = selectedDateTime.ToString("o") },
+                    end = new { dateTime = selectedDateTime.ToString("o") },
+                    body = new { content = emailTemplate, contentType = "Text" },
+                    attendees = new[]
+                    {
+                        new { emailAddress = new { address = clientEmail }, type = "Required" },
+                        new { emailAddress = new { address = candidateEmail }, type = "Required" }
+                    }
+                };
 
-            var json = System.Text.Json.JsonSerializer.Serialize(newEvent);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var json = System.Text.Json.JsonSerializer.Serialize(newEvent);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var graphClient = new HttpClient();
-            graphClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+                graphClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
-            var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
+                var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
 
-            if (response.IsSuccessStatusCode)
-            {
-                // Event created successfully
+               
+                string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
+                System.Diagnostics.Process.Start(new ProcessStartInfo
+                {
+                    FileName= inviteUrl,
+                    UseShellExecute = true
+                });
+                
+
             }
-            else
+            catch (System.Exception ex)
             {
-                // Handle error response
+                System.Windows.MessageBox.Show($"An error occurred while creating the calendar invite: {ex.Message}");
             }
 
         }
@@ -305,7 +316,7 @@ namespace Sendout_Calendar_Invite_Project
                 // Show a success message
                 System.Windows.MessageBox.Show("Client information saved successfully.");
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 // Handle any potential exceptions that occurred during the save operation
                 System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
@@ -341,7 +352,7 @@ namespace Sendout_Calendar_Invite_Project
                 ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
                 ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 // Handle any potential exceptions
                 System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
@@ -374,7 +385,7 @@ namespace Sendout_Calendar_Invite_Project
                 // Show a success message
                 System.Windows.MessageBox.Show("Candidate information saved successfully.");
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 // Handle any potential exceptions that occurred during the save operation
                 System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
@@ -410,7 +421,7 @@ namespace Sendout_Calendar_Invite_Project
                 CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
                 CandidateComboBox.Text = dataViewer.SelectedCandidateTimeZone;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 // Handle any potential exceptions
                 System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
