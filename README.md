@@ -86,4 +86,4 @@ In its current state, the code is very useful to me in my personal job, but ther
 ### In development
 In my development branch, I'm currently learning how to make the app work with Microsoft Graph API. This will allow the user to create a calendar invite even if no outlook app is installed, as it will prompt them to sign in, grant permission and then display the calendar invite.
 
-Currently, it opens a calendar invite but the method I used is limited and not all the information can be passed.
+Currently, it successfully opens a new tab to outlook and opens the calendar invite with all the correct information, although the formatting for the body needs work and still needs improvements.
