@@ -31,6 +31,7 @@ using Microsoft.Office.Interop.Outlook;
 using System.Net.Http.Headers;
 using System.Diagnostics;
 using System.Web;
+using Newtonsoft.Json.Linq;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -200,34 +201,6 @@ namespace Sendout_Calendar_Invite_Project
             //getting permissions for Graph API
 
             PerformAuthentication(eventTitle, invite.Location, emailTemplate, client.Email, candidate.Email, selectedDateTime);
-
-            /*
-
-            string inviteUrl = $"https://outlook.office.com/calendar/0/deeplink/compose?subject={eventTitle}";
-            System.Diagnostics.Process.Start(inviteUrl);
-            */
-             // create a new appointment item in the outlook app
-             /*
-             Outlook.Application outlookApp = new Outlook.Application();
-             Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
-
-             // set the properties of the appointment
-             appointment.MeetingStatus = Outlook.OlMeetingStatus.olMeeting;
-             Outlook.Recipient clientRecipient = appointment.Recipients.Add(client.Email);
-             clientRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
-             Outlook.Recipient candidateRecipient = appointment.Recipients.Add(candidate.Email);
-             candidateRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
-             appointment.Subject = eventTitle;
-             appointment.Location = invite.Location;
-             appointment.Body = emailTemplate;
-             DateTime start = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
-             DateTime end = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
-
-             appointment.Start = start;
-             appointment.End = end;
-
-             appointment.Display(true); //need to edit as causes an error if calendar invite is already up
-             */
         }
 
         private async Task PerformAuthentication(string eventTitle, string location, string emailTemplate, string clientEmail, string candidateEmail, DateTime selectedDateTime)
@@ -251,7 +224,6 @@ namespace Sendout_Calendar_Invite_Project
 
                 AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
 
-
                 // Create the event object
                 var newEvent = new
                 {
@@ -272,20 +244,27 @@ namespace Sendout_Calendar_Invite_Project
 
                 graphClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
-                var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
-                
-                string encodedEventTitle = HttpUtility.UrlEncode(eventTitle);
-                string encodedStartDateTime = HttpUtility.UrlEncode(selectedDateTime.ToString("o"));
-                string encodedEndDateTime = HttpUtility.UrlEncode(selectedDateTime.AddMinutes(30).ToString("o"));
 
-                string inviteUrl = $"https://outlook.office.com/calendar/action/compose?subject={encodedEventTitle}&start={encodedStartDateTime}&end={encodedEndDateTime}";
+
+                var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
+
+                // Create the URL for opening the Outlook Web App with pre-filled information
+                string baseUrl = "https://outlook.office.com/calendar/action/compose";
+                string subject = HttpUtility.UrlEncode(eventTitle);
+                string body = HttpUtility.UrlEncode(emailTemplate);
+                string startDateTime = HttpUtility.UrlEncode(selectedDateTime.ToString("o"));
+                string endDateTime = HttpUtility.UrlEncode(selectedDateTime.AddMinutes(30).ToString("o"));
+                string encodedLocation = HttpUtility.UrlEncode(location);
+                string clientEmailAddress = HttpUtility.UrlEncode(clientEmail);
+                string candidateEmailAddress = HttpUtility.UrlEncode(candidateEmail);
+
+                string url = $"{baseUrl}?subject={subject}&startdt={startDateTime}&enddt={endDateTime}&body={body}&location={encodedLocation}&to={clientEmailAddress};{candidateEmailAddress}";
 
                 System.Diagnostics.Process.Start(new ProcessStartInfo
                 {
-                    FileName= inviteUrl,
+                    FileName = url,
                     UseShellExecute = true
                 });
-                
 
             }
             catch (System.Exception ex)
