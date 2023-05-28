@@ -115,22 +115,6 @@ namespace Sendout_Calendar_Invite_Project
             UpdateClientTimeZone();
             UpdateCandidateTimeZone();
 
-            if (clientTimeZone == null)
-            {
-                clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
-                clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
-                clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
-            }
-
-            if (candidateTimeZone == null)
-            {
-                candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
-                candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
-                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
-            }
-
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
 
             if (clientTimeZoneString != candidateTimeZoneString)
@@ -475,10 +459,6 @@ namespace Sendout_Calendar_Invite_Project
                 clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
                 clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
             }
-            private void ClientComboBox_DropDownClosed(object sender, EventArgs e)
-            {
-                UpdateClientTimeZone();
-            }
 
             private void UpdateCandidateTimeZone()
             {
@@ -504,10 +484,6 @@ namespace Sendout_Calendar_Invite_Project
                 DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
                 candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
                 candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
-            }
-            private void CandidateComboBox_DropDownClosed(object sender, EventArgs e)
-            {
-                UpdateCandidateTimeZone();
             }
         public static DateTimeOffset DaylightConvert(DateTime selectedDateTime, TimeZoneInfo timeZone)
         {
