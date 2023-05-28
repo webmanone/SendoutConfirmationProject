@@ -78,12 +78,10 @@ Breakdown:
 - Limited to Outlook - currently, this only works with the Outlook desktop app. This is fine for personal use, but in another version I should make use of the Microsoft Graph API so that the program works for whatever platform the user is using, whether it's outlook in the web browser, google calendar, etc.
 - Currently the Teams Interview template doesn't automatically create a Teams link and set it so that the users can automatically join. An oversight I had was that I assumed the outlook on my personal laptop would be the same as on my work laptop, but you have to pay to get the business version of Outlook which is different. As of my personal Outlook, the default is set to Skype. It may work on my work on my work laptop, but it should be easier to make sure it sets up the online meeting regardlesss of if you're using Teams, Skype, Zoom, etc. using the Graph API.
 - The current entry fields may be limited for other recruiters, for example some may need to include the client's number, candidate's company, etc.
-- For the Graph API to work, the user needs to log in and consent, so there needs to be a way to log in to your microsoft account.
+- Enable searching/filtering/ordering list of saved clients/candidates.
 
 
 In its current state, the code is very useful to me in my personal job, but there are a number of improvements that need to be made before it could be shippable commercially and used by other recruiters.
 
-### In development
-In my development branch, I'm currently learning how to make the app work with Microsoft Graph API. This will allow the user to create a calendar invite even if no outlook app is installed, as it will prompt them to sign in, grant permission and then display the calendar invite.
-
-Currently, it successfully opens a new tab to outlook and opens the calendar invite with all the correct information, although the formatting for the body needs work and still needs improvements.
+## Update - 28/05/2023
+I've successfully switched to using the Microsoft Graph API to create a calendar invite in the outlook web app. In this way the user can send a calendar invite even if they don't have the app installed.
