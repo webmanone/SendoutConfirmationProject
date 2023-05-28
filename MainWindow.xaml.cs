@@ -144,59 +144,69 @@ namespace Sendout_Calendar_Invite_Project
 
             if (selectedTemplate == "First stage phone call")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following call at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following call at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
 
                 invite.Location = candidatePhone;
 
             } else if (selectedTemplate == "Teams interview")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" +
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"Please join the Teams meeting at the arranged time. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following {invite.EventType} at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>Please join the Teams meeting at the arranged time.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
+
             } else if (selectedTemplate == "In-person interview")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following in-person interview at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" +
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following in-person interview at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
+
             } else if (selectedTemplate == "Other")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following interview at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following interview at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
             }
             //getting permissions for Graph API
 
@@ -231,7 +241,7 @@ namespace Sendout_Calendar_Invite_Project
                     location = new { displayName = location },
                     start = new { dateTime = selectedDateTime.ToString("o") },
                     end = new { dateTime = selectedDateTime.AddMinutes(30).ToString("o") },
-                    body = new { content = emailTemplate, contentType = "Text" },
+                    body = new { content = emailTemplate, contentType = "HTML" },
                     attendees = new[]
                     {
                         new { emailAddress = new { address = clientEmail }, type = "Required" },
