@@ -21,6 +21,17 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Identity.Client;
+using System.Net.Mail;
+using Microsoft.Graph;
+using Microsoft.Graph.Authentication;
+using System.ComponentModel;
+using System.Net.Http;
+using Microsoft.Office.Interop.Outlook;
+using System.Net.Http.Headers;
+using System.Diagnostics;
+using System.Web;
+using Newtonsoft.Json.Linq;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -41,9 +52,12 @@ namespace Sendout_Calendar_Invite_Project
         private string clientTimeZoneString = "Eastern";
         private string candidateTimeZoneString = "Eastern";
         private string location = "";
+        private static readonly HttpClient graphClient = new HttpClient();
+
         public MainWindow()
         {
             InitializeComponent();
+
             DateTimePicker dateTimePicker = new DateTimePicker();
             dateTimePicker.Value = DateTime.Now;
         }
@@ -98,21 +112,8 @@ namespace Sendout_Calendar_Invite_Project
                 AdditionalInfo = additionalInfo
             };
 
-            if (clientTimeZone == null)
-            {
-                clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
-                clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
-                clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
-            }
-
-            if (candidateTimeZone == null)
-            {
-                candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
-                candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
-                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
-            }
+            UpdateClientTimeZone();
+            UpdateCandidateTimeZone();
 
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
 
@@ -130,82 +131,145 @@ namespace Sendout_Calendar_Invite_Project
 
             if (selectedTemplate == "First stage phone call")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following call at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following call at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
 
                 invite.Location = candidatePhone;
 
             } else if (selectedTemplate == "Teams interview")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following {invite.EventType} at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" +
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"Please join the Teams meeting at the arranged time. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following {invite.EventType} at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>Please join the Teams meeting at the arranged time.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
+
             } else if (selectedTemplate == "In-person interview")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following in-person interview at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" +
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following in-person interview at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
+
             } else if (selectedTemplate == "Other")
             {
-                emailTemplate += $"{clientFirstName}/{candidateFirstName}, \n \n" +
-                    $"I'm pleased to confirm the following interview at {differentTimeZone} on {selectedDate}. \n \n" +
-                    $"Client: {client.Name} - {client.Company} \n" + //will need to edit this to cater for if there are multiple clients
-                    $"Candidate: {candidate.Name} \n" +
-                    $"Date: {invite.Date} \n" +
-                    $"Time: {differentTimeZone} \n \n" +
-                    $"{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time. \n \n" +
-                    $"I'm looking forward to discussing feedback following the call. \n \n" +
-                    $"If anything comes up and we need to re-arrange the call, please let me know. \n \n" +
-                    $"{invite.AdditionalInfo}" +
-                    $"Best regards, \n";
+                emailTemplate += $"<html><body>" +
+                    $"<p>{clientFirstName}/{candidateFirstName},</p> <br>" +
+                    $"<p>I'm pleased to confirm the following interview at {differentTimeZone} on {selectedDate}.</p> <br>" +
+                    $"<p>Client: {client.Name} - {client.Company}</p>" +
+                    $"<p>Candidate: {candidate.Name}</p>" +
+                    $"<p>Date: {invite.Date}</p>" +
+                    $"<p>Time: {differentTimeZone}</p> <br>" +
+                    $"<p>{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}.</p> <br>" +
+                    $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
+                    $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
+                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"<p>Best regards,</p>" +
+                    $"</body></html>";
+            }
+            //getting permissions for Graph API
+
+            PerformAuthentication(eventTitle, invite.Location, emailTemplate, client.Email, candidate.Email, selectedDateTime);
+        }
+
+        private async Task PerformAuthentication(string eventTitle, string location, string emailTemplate, string clientEmail, string candidateEmail, DateTime selectedDateTime)
+        {
+
+            try
+            {
+                //Graph API Initialisation
+                string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
+                string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
+                //string tenantId = "ad479f1c-7ac4-4f58-93e9-67c0d9b6dc0c";
+                string authority = "https://login.microsoftonline.com/common";
+                //string redirectUri = "https://localhost/8080";
+                string[] scopes = { "https://graph.microsoft.com/.default" };
+
+                IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
+                    .Create(clientId)
+                    .WithClientSecret(clientSecret)
+                    .WithAuthority(authority)
+                    .Build();
+
+                AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+
+                // Create the event object
+                var newEvent = new
+                {
+                    subject = eventTitle,
+                    location = new { displayName = location },
+                    start = new { dateTime = selectedDateTime.ToString("o") },
+                    end = new { dateTime = selectedDateTime.AddMinutes(30).ToString("o") },
+                    body = new { content = emailTemplate, contentType = "HTML" },
+                    attendees = new[]
+                    {
+                        new { emailAddress = new { address = clientEmail }, type = "Required" },
+                        new { emailAddress = new { address = candidateEmail }, type = "Required" }
+                    }
+                };
+
+                var json = System.Text.Json.JsonSerializer.Serialize(newEvent);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                graphClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+
+
+
+                var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
+
+                // Create the URL for opening the Outlook Web App with pre-filled information
+                string baseUrl = "https://outlook.office.com/calendar/action/compose";
+                string subject = HttpUtility.UrlEncode(eventTitle);
+                string body = HttpUtility.UrlEncode(emailTemplate);
+                string startDateTime = HttpUtility.UrlEncode(selectedDateTime.ToString("o"));
+                string endDateTime = HttpUtility.UrlEncode(selectedDateTime.AddMinutes(30).ToString("o"));
+                string encodedLocation = HttpUtility.UrlEncode(location);
+                string clientEmailAddress = HttpUtility.UrlEncode(clientEmail);
+                string candidateEmailAddress = HttpUtility.UrlEncode(candidateEmail);
+
+                string url = $"{baseUrl}?subject={subject}&startdt={startDateTime}&enddt={endDateTime}&body={body}&location={encodedLocation}&to={clientEmailAddress};{candidateEmailAddress}";
+
+                System.Diagnostics.Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+
+            }
+            catch (System.Exception ex)
+            {
+             System.Windows.MessageBox.Show($"An error occurred while creating the calendar invite: {ex.Message}");
             }
 
-            // create a new appointment item
-            Outlook.Application outlookApp = new Outlook.Application();
-            Outlook.AppointmentItem appointment = outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem);
-
-            // set the properties of the appointment
-            appointment.MeetingStatus = Outlook.OlMeetingStatus.olMeeting;
-            Outlook.Recipient clientRecipient = appointment.Recipients.Add(client.Email);
-            clientRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
-            Outlook.Recipient candidateRecipient = appointment.Recipients.Add(candidate.Email);
-            candidateRecipient.Type = (int)Outlook.OlMeetingRecipientType.olRequired;
-            appointment.Subject = eventTitle;
-            appointment.Location = invite.Location;
-            appointment.Body = emailTemplate;
-            DateTime start = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.StartTime.Hour, invite.StartTime.Minute, 0);
-            DateTime end = new DateTime(invite.StartTime.Year, invite.StartTime.Month, invite.StartTime.Day, invite.EndTime.Hour, invite.EndTime.Minute, 0);
-
-            appointment.Start = start;
-            appointment.End = end;
-
-            appointment.Display(true); //need to edit as causes an error if calendar invite is already up
-        }
+            }
 
             private void SaveClient_Click(object sender, RoutedEventArgs e)
             {
@@ -222,59 +286,59 @@ namespace Sendout_Calendar_Invite_Project
             // Define the file path to save the client information
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
 
-            try
-            {
-                // Serialize the new client to JSON
-                string json = JsonConvert.SerializeObject(client);
+                try
+                {
+                    // Serialize the new client to JSON
+                    string json = JsonConvert.SerializeObject(client);
 
-                // Append the JSON string to the existing file
-                File.AppendAllText(filePath, json + Environment.NewLine);
+                    // Append the JSON string to the existing file
+                    File.AppendAllText(filePath, json + Environment.NewLine);
 
-                // Show a success message
-                System.Windows.MessageBox.Show("Client information saved successfully.");
+                    // Show a success message
+                    System.Windows.MessageBox.Show("Client information saved successfully.");
+                }
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions that occurred during the save operation
+                    System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                // Handle any potential exceptions that occurred during the save operation
-                System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
-            }
-        }
 
             private void LoadClient_Click(object sender, RoutedEventArgs e)
-        {
+            {
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
 
-            try
-            {
-                // Read the JSON data from the file
-                string jsonData = File.ReadAllText(filePath);
-
-                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Deserialize each JSON object and add it to the list of clients
-                List<Client> clientsList = new List<Client>();
-                foreach (string json in jsonLines)
+                try
                 {
-                    Client client = JsonConvert.DeserializeObject<Client>(json);
-                    clientsList.Add(client);
+                    // Read the JSON data from the file
+                    string jsonData = File.ReadAllText(filePath);
+
+                    string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // Deserialize each JSON object and add it to the list of clients
+                    List<Client> clientsList = new List<Client>();
+                    foreach (string json in jsonLines)
+                    {
+                        Client client = JsonConvert.DeserializeObject<Client>(json);
+                        clientsList.Add(client);
+                    }
+
+                    DataViewer dataViewer = new DataViewer(clientsList);  // Create an instance of the DataViewer window
+                    // Set the ItemsSource of the DataGrid
+
+                    dataViewer.ShowDialog();
+
+                    ClientNameTextBox.Text = dataViewer.SelectedClientName;
+                    ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
+                    ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
+                    ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
                 }
-
-                DataViewer dataViewer = new DataViewer(clientsList);  // Create an instance of the DataViewer window
-                // Set the ItemsSource of the DataGrid
-
-                dataViewer.ShowDialog();
-
-                ClientNameTextBox.Text = dataViewer.SelectedClientName;
-                ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
-                ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
-                ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions
+                    System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                // Handle any potential exceptions
-                System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
-            }
-        }
 
             private void SaveCandidate_Click(object sender, RoutedEventArgs e)
             {
@@ -291,59 +355,59 @@ namespace Sendout_Calendar_Invite_Project
             // Define the file path to save the client information
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
 
-            try
-            {
-                // Serialize the new client to JSON
-                string json = JsonConvert.SerializeObject(candidate);
+                try
+                {
+                    // Serialize the new client to JSON
+                    string json = JsonConvert.SerializeObject(candidate);
 
-                // Append the JSON string to the existing file
-                File.AppendAllText(filePath, json + Environment.NewLine);
+                    // Append the JSON string to the existing file
+                    File.AppendAllText(filePath, json + Environment.NewLine);
 
-                // Show a success message
-                System.Windows.MessageBox.Show("Candidate information saved successfully.");
+                    // Show a success message
+                    System.Windows.MessageBox.Show("Candidate information saved successfully.");
+                }
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions that occurred during the save operation
+                    System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                // Handle any potential exceptions that occurred during the save operation
-                System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
-            }
-        }
 
             private void LoadCandidate_Click(object sender, RoutedEventArgs e)
             {
-            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
+                string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
 
-            try
-            {
-                // Read the JSON data from the file
-                string jsonData = File.ReadAllText(filePath);
-
-                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Deserialize each JSON object and add it to the list of clients
-                List<Candidate> candidatesList = new List<Candidate>();
-                foreach (string json in jsonLines)
+                try
                 {
-                    Candidate candidate = JsonConvert.DeserializeObject<Candidate>(json);
-                    candidatesList.Add(candidate);
+                    // Read the JSON data from the file
+                    string jsonData = File.ReadAllText(filePath);
+
+                    string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // Deserialize each JSON object and add it to the list of clients
+                    List<Candidate> candidatesList = new List<Candidate>();
+                    foreach (string json in jsonLines)
+                    {
+                        Candidate candidate = JsonConvert.DeserializeObject<Candidate>(json);
+                        candidatesList.Add(candidate);
+                    }
+
+                    DataViewer dataViewer = new DataViewer(candidatesList);  // Create an instance of the DataViewer window
+                    // Set the ItemsSource of the DataGrid
+
+                    dataViewer.ShowDialog();
+
+                    CandidateNameTextBox.Text = dataViewer.SelectedCandidateName;
+                    CandidateEmailTextBox.Text = dataViewer.SelectedCandidateEmail;
+                    CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
+                    CandidateComboBox.Text = dataViewer.SelectedCandidateTimeZone;
                 }
-
-                DataViewer dataViewer = new DataViewer(candidatesList);  // Create an instance of the DataViewer window
-                // Set the ItemsSource of the DataGrid
-
-                dataViewer.ShowDialog();
-
-                CandidateNameTextBox.Text = dataViewer.SelectedCandidateName;
-                CandidateEmailTextBox.Text = dataViewer.SelectedCandidateEmail;
-                CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
-                CandidateComboBox.Text = dataViewer.SelectedCandidateTimeZone;
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions
+                    System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                // Handle any potential exceptions
-                System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
-            }
-        }
 
             private void Edit_Click(object sender, RoutedEventArgs e)
             {
@@ -369,52 +433,58 @@ namespace Sendout_Calendar_Invite_Project
                 else if (selectedTemplate == "In-person interview"){
                 location = selectedTemplate;
                 }
-        }
-
-            private void ClientComboBox_DropDownClosed(object sender, EventArgs e)
+            }
+            private void UpdateClientTimeZone()
             {
-                
                 clientTimeZoneString = ClientComboBox.Text;
-               
-                if (clientTimeZoneString == "Eastern"){
+
+                if (clientTimeZoneString == "Eastern")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 }
-                else if (clientTimeZoneString == "Central"){
+                else if (clientTimeZoneString == "Central")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
                 }
-                else if (clientTimeZoneString == "Mountain"){
+                else if (clientTimeZoneString == "Mountain")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
                 }
-                else if (clientTimeZoneString == "Pacific"){
+                else if (clientTimeZoneString == "Pacific")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
                 }
 
-            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
-            clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
-            clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
-        }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
+                clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
+                clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
+            }
 
-            private void CandidateComboBox_DropDownClosed(object sender, EventArgs e)
+            private void UpdateCandidateTimeZone()
             {
                 candidateTimeZoneString = CandidateComboBox.Text;
-            
-                if (candidateTimeZoneString == "Eastern"){
+
+                if (candidateTimeZoneString == "Eastern")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 }
-                else if (candidateTimeZoneString == "Central"){
+                else if (candidateTimeZoneString == "Central")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
                 }
-                else if (candidateTimeZoneString == "Mountain"){
+                else if (candidateTimeZoneString == "Mountain")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
                 }
-                else if (candidateTimeZoneString == "Pacific"){
+                else if (candidateTimeZoneString == "Pacific")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
                 }
 
-            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
-            candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
-            candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
-        }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
+                candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
+                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
+            }
         public static DateTimeOffset DaylightConvert(DateTime selectedDateTime, TimeZoneInfo timeZone)
         {
             DateTimeOffset selectedDateTimeOffset = new DateTimeOffset(selectedDateTime, TimeSpan.Zero);
