@@ -112,6 +112,9 @@ namespace Sendout_Calendar_Invite_Project
                 AdditionalInfo = additionalInfo
             };
 
+            UpdateClientTimeZone();
+            UpdateCandidateTimeZone();
+
             if (clientTimeZone == null)
             {
                 clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
@@ -279,10 +282,10 @@ namespace Sendout_Calendar_Invite_Project
             }
             catch (System.Exception ex)
             {
-                System.Windows.MessageBox.Show($"An error occurred while creating the calendar invite: {ex.Message}");
+             System.Windows.MessageBox.Show($"An error occurred while creating the calendar invite: {ex.Message}");
             }
 
-        }
+            }
 
             private void SaveClient_Click(object sender, RoutedEventArgs e)
             {
@@ -299,59 +302,59 @@ namespace Sendout_Calendar_Invite_Project
             // Define the file path to save the client information
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
 
-            try
-            {
-                // Serialize the new client to JSON
-                string json = JsonConvert.SerializeObject(client);
+                try
+                {
+                    // Serialize the new client to JSON
+                    string json = JsonConvert.SerializeObject(client);
 
-                // Append the JSON string to the existing file
-                File.AppendAllText(filePath, json + Environment.NewLine);
+                    // Append the JSON string to the existing file
+                    File.AppendAllText(filePath, json + Environment.NewLine);
 
-                // Show a success message
-                System.Windows.MessageBox.Show("Client information saved successfully.");
+                    // Show a success message
+                    System.Windows.MessageBox.Show("Client information saved successfully.");
+                }
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions that occurred during the save operation
+                    System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
+                }
             }
-            catch (System.Exception ex)
-            {
-                // Handle any potential exceptions that occurred during the save operation
-                System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
-            }
-        }
 
             private void LoadClient_Click(object sender, RoutedEventArgs e)
-        {
+            {
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
 
-            try
-            {
-                // Read the JSON data from the file
-                string jsonData = File.ReadAllText(filePath);
-
-                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Deserialize each JSON object and add it to the list of clients
-                List<Client> clientsList = new List<Client>();
-                foreach (string json in jsonLines)
+                try
                 {
-                    Client client = JsonConvert.DeserializeObject<Client>(json);
-                    clientsList.Add(client);
+                    // Read the JSON data from the file
+                    string jsonData = File.ReadAllText(filePath);
+
+                    string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // Deserialize each JSON object and add it to the list of clients
+                    List<Client> clientsList = new List<Client>();
+                    foreach (string json in jsonLines)
+                    {
+                        Client client = JsonConvert.DeserializeObject<Client>(json);
+                        clientsList.Add(client);
+                    }
+
+                    DataViewer dataViewer = new DataViewer(clientsList);  // Create an instance of the DataViewer window
+                    // Set the ItemsSource of the DataGrid
+
+                    dataViewer.ShowDialog();
+
+                    ClientNameTextBox.Text = dataViewer.SelectedClientName;
+                    ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
+                    ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
+                    ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
                 }
-
-                DataViewer dataViewer = new DataViewer(clientsList);  // Create an instance of the DataViewer window
-                // Set the ItemsSource of the DataGrid
-
-                dataViewer.ShowDialog();
-
-                ClientNameTextBox.Text = dataViewer.SelectedClientName;
-                ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
-                ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
-                ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions
+                    System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
+                }
             }
-            catch (System.Exception ex)
-            {
-                // Handle any potential exceptions
-                System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
-            }
-        }
 
             private void SaveCandidate_Click(object sender, RoutedEventArgs e)
             {
@@ -368,59 +371,59 @@ namespace Sendout_Calendar_Invite_Project
             // Define the file path to save the client information
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
 
-            try
-            {
-                // Serialize the new client to JSON
-                string json = JsonConvert.SerializeObject(candidate);
+                try
+                {
+                    // Serialize the new client to JSON
+                    string json = JsonConvert.SerializeObject(candidate);
 
-                // Append the JSON string to the existing file
-                File.AppendAllText(filePath, json + Environment.NewLine);
+                    // Append the JSON string to the existing file
+                    File.AppendAllText(filePath, json + Environment.NewLine);
 
-                // Show a success message
-                System.Windows.MessageBox.Show("Candidate information saved successfully.");
+                    // Show a success message
+                    System.Windows.MessageBox.Show("Candidate information saved successfully.");
+                }
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions that occurred during the save operation
+                    System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
+                }
             }
-            catch (System.Exception ex)
-            {
-                // Handle any potential exceptions that occurred during the save operation
-                System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
-            }
-        }
 
             private void LoadCandidate_Click(object sender, RoutedEventArgs e)
             {
-            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
+                string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
 
-            try
-            {
-                // Read the JSON data from the file
-                string jsonData = File.ReadAllText(filePath);
-
-                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Deserialize each JSON object and add it to the list of clients
-                List<Candidate> candidatesList = new List<Candidate>();
-                foreach (string json in jsonLines)
+                try
                 {
-                    Candidate candidate = JsonConvert.DeserializeObject<Candidate>(json);
-                    candidatesList.Add(candidate);
+                    // Read the JSON data from the file
+                    string jsonData = File.ReadAllText(filePath);
+
+                    string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // Deserialize each JSON object and add it to the list of clients
+                    List<Candidate> candidatesList = new List<Candidate>();
+                    foreach (string json in jsonLines)
+                    {
+                        Candidate candidate = JsonConvert.DeserializeObject<Candidate>(json);
+                        candidatesList.Add(candidate);
+                    }
+
+                    DataViewer dataViewer = new DataViewer(candidatesList);  // Create an instance of the DataViewer window
+                    // Set the ItemsSource of the DataGrid
+
+                    dataViewer.ShowDialog();
+
+                    CandidateNameTextBox.Text = dataViewer.SelectedCandidateName;
+                    CandidateEmailTextBox.Text = dataViewer.SelectedCandidateEmail;
+                    CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
+                    CandidateComboBox.Text = dataViewer.SelectedCandidateTimeZone;
                 }
-
-                DataViewer dataViewer = new DataViewer(candidatesList);  // Create an instance of the DataViewer window
-                // Set the ItemsSource of the DataGrid
-
-                dataViewer.ShowDialog();
-
-                CandidateNameTextBox.Text = dataViewer.SelectedCandidateName;
-                CandidateEmailTextBox.Text = dataViewer.SelectedCandidateEmail;
-                CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
-                CandidateComboBox.Text = dataViewer.SelectedCandidateTimeZone;
+                catch (System.Exception ex)
+                {
+                    // Handle any potential exceptions
+                    System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
+                }
             }
-            catch (System.Exception ex)
-            {
-                // Handle any potential exceptions
-                System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
-            }
-        }
 
             private void Edit_Click(object sender, RoutedEventArgs e)
             {
@@ -446,52 +449,66 @@ namespace Sendout_Calendar_Invite_Project
                 else if (selectedTemplate == "In-person interview"){
                 location = selectedTemplate;
                 }
-        }
-
-            private void ClientComboBox_DropDownClosed(object sender, EventArgs e)
+            }
+            private void UpdateClientTimeZone()
             {
-                
                 clientTimeZoneString = ClientComboBox.Text;
-               
-                if (clientTimeZoneString == "Eastern"){
+
+                if (clientTimeZoneString == "Eastern")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 }
-                else if (clientTimeZoneString == "Central"){
+                else if (clientTimeZoneString == "Central")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
                 }
-                else if (clientTimeZoneString == "Mountain"){
+                else if (clientTimeZoneString == "Mountain")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
                 }
-                else if (clientTimeZoneString == "Pacific"){
+                else if (clientTimeZoneString == "Pacific")
+                {
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
                 }
 
-            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
-            clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
-            clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
-        }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
+                clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
+                clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
+            }
+            private void ClientComboBox_DropDownClosed(object sender, EventArgs e)
+            {
+                UpdateClientTimeZone();
+            }
 
-            private void CandidateComboBox_DropDownClosed(object sender, EventArgs e)
+            private void UpdateCandidateTimeZone()
             {
                 candidateTimeZoneString = CandidateComboBox.Text;
-            
-                if (candidateTimeZoneString == "Eastern"){
+
+                if (candidateTimeZoneString == "Eastern")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 }
-                else if (candidateTimeZoneString == "Central"){
+                else if (candidateTimeZoneString == "Central")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
                 }
-                else if (candidateTimeZoneString == "Mountain"){
+                else if (candidateTimeZoneString == "Mountain")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
                 }
-                else if (candidateTimeZoneString == "Pacific"){
+                else if (candidateTimeZoneString == "Pacific")
+                {
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
                 }
 
-            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
-            candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
-            candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
-        }
+                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
+                candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
+                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
+            }
+            private void CandidateComboBox_DropDownClosed(object sender, EventArgs e)
+            {
+                UpdateCandidateTimeZone();
+            }
         public static DateTimeOffset DaylightConvert(DateTime selectedDateTime, TimeZoneInfo timeZone)
         {
             DateTimeOffset selectedDateTimeOffset = new DateTimeOffset(selectedDateTime, TimeSpan.Zero);
