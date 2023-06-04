@@ -32,8 +32,7 @@
             <ComboBoxItem>In-person interview</ComboBoxItem>
             <ComboBoxItem>Other</ComboBoxItem>
         </ComboBox>
-        <Button Grid.Row="0" Grid.Column="1" Content="Edit" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Center" Click="Edit_Click" Width="39"/>
-        
+
         <Label Grid.Row="0" Grid.Column="2" Content="Date/time:" VerticalAlignment="Center"/>
         <xct:DateTimePicker x:Name="DateTimePicker" Grid.Row="0" Grid.Column="3" Width="200" Margin="5" ValueChanged="DateTimePicker_ValueChanged"/>
 
@@ -71,11 +70,8 @@
         <Label Grid.Row="4" Grid.Column="2" Content="Candidate phone:" VerticalAlignment="Center"/>
         <TextBox x:Name="CandidatePhoneTextBox" Grid.Row="4" Grid.Column="3" Width="200" Margin="5"/>
 
-        <Label Grid.Row="5" Grid.Column="0" Content="More clients?" VerticalAlignment="Center"/>
-        <Button Grid.Row="5" Grid.Column="1" Content="Add additional client" Width="Auto" Margin="5" Click="AddClient_Click"/>
-        
-        <Label Grid.Row="5" Grid.Column="2" Content="Additional info (optional):" VerticalAlignment="Center"/>
-        <TextBox x:Name="AdditionalInfoTextBox" Grid.Row="5" Grid.Column="3"  Width="200" Margin="5"/>
+        <Label Grid.Row="5" Grid.Column="0" Content="Additional info (optional):" VerticalAlignment="Center"/>
+        <TextBox x:Name="AdditionalInfoTextBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Width="660" Margin="5"/>
 
         <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Content="Preview" Width="100" Margin="5" Click="Preview_Click"/>
         <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Content="Save client" Width="100" Margin="5" HorizontalAlignment="left" Click="SaveClient_Click"/>
