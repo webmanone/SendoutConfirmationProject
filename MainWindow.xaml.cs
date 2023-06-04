@@ -1,73 +1,43 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
-using Xceed.Wpf.Toolkit.Primitives;
-using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Globalization;
 using Newtonsoft.Json;
-using System.Data;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Identity.Client;
-using System.Net.Mail;
-using Microsoft.Graph;
-using Microsoft.Graph.Authentication;
-using System.ComponentModel;
 using System.Net.Http;
-using Microsoft.Office.Interop.Outlook;
 using System.Net.Http.Headers;
 using System.Diagnostics;
 using System.Web;
-using Newtonsoft.Json.Linq;
 
 namespace Sendout_Calendar_Invite_Project
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private string selectedTemplate = "First stage phone call";
-        private string selectedDate;
-        private DateTime selectedDateTime;
-        private TimeZoneInfo clientTimeZone;
-        private TimeZoneInfo candidateTimeZone;
-        private string clientTime;
-        private string candidateTime;
-       // private string dateString;
-        private string startTimeString;
-        private string clientTimeZoneString = "Eastern";
-        private string candidateTimeZoneString = "Eastern";
-        private string location = "";
-        private static readonly HttpClient graphClient = new HttpClient();
+        private string selectedDate; //Stores the selected date to use in the template
+        private DateTime selectedDateTime; //Stores the selected date and time for the purpose of using in the calendar invite
+        private TimeZoneInfo clientTimeZone; //Time zone to be used in time zone conversion calculations.
+        private TimeZoneInfo candidateTimeZone; //""
+        private string clientTime; //Used in the templates
+        private string candidateTime; //""
+        private string clientTimeZoneString = "Eastern"; //""
+        private string candidateTimeZoneString = "Eastern"; //""
+        private string location = ""; //Stores location of the event, which will change between Microsoft Teams or the candidate's phone number depending on what's selected.
+        private static readonly HttpClient graphClient = new HttpClient(); 
 
         public MainWindow()
         {
             InitializeComponent();
 
-            DateTimePicker dateTimePicker = new DateTimePicker();
-            dateTimePicker.Value = DateTime.Now;
         }
         private void Preview_Click(object sender, RoutedEventArgs e)
         {
-            // Handle preview button click
-
+            //Initialise variables to store user input
             string eventTitle = null;
-            //string startTime = selectedDateTime.Value.ToString("h:mm tt");
-            //DateTime endTime = startTime.AddHours(1);
             string clientName = ClientNameTextBox.Text;
             string clientEmail = ClientEmailTextBox.Text;
             string clientCompany = ClientCompanyTextBox.Text;
@@ -79,8 +49,8 @@ namespace Sendout_Calendar_Invite_Project
             string candidateFirstName = candidateName.Split(' ')[0];
             string emailTemplate = "";
             string differentTimeZone = "";
-            //template, candidate time zone and client time zone should already be stored by the event handlers
 
+            //Create client object
             Client client = new Client
             {
                 Name = clientName,
@@ -112,11 +82,14 @@ namespace Sendout_Calendar_Invite_Project
                 AdditionalInfo = additionalInfo
             };
 
+            //Update client and candidate time zones
             UpdateClientTimeZone();
             UpdateCandidateTimeZone();
 
+            //Construct event title
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
 
+            //Determine if candidate and client time zones are different, and edit template information accordingly
             if (clientTimeZoneString != candidateTimeZoneString)
             {
                 differentTimeZone += $"{clientTime} {clientTimeZoneString}/{candidateTime} {candidateTimeZoneString}";
@@ -125,10 +98,12 @@ namespace Sendout_Calendar_Invite_Project
                 differentTimeZone += $"{clientTime} {clientTimeZoneString}";
             }
 
+            //Append additional information if provided
             if (invite.AdditionalInfo != "") {
-                invite.AdditionalInfo = $"{invite.AdditionalInfo} \n \n";
+                invite.AdditionalInfo = $"<p>{invite.AdditionalInfo}</p> <br>";
             }
 
+            //Generate text in the body of the calendar invite based on selected template
             if (selectedTemplate == "First stage phone call")
             {
                 emailTemplate += $"<html><body>" +
@@ -141,7 +116,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"<p>{clientFirstName} - Please call {candidateFirstName} on {candidate.Phone} at the arranged time.</p> <br>" +
                     $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
                     $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
-                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"{invite.AdditionalInfo}" +
                     $"<p>Best regards,</p>" +
                     $"</body></html>";
 
@@ -159,7 +134,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"<p>Please join the Teams meeting at the arranged time.</p> <br>" +
                     $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
                     $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
-                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"{invite.AdditionalInfo}" +
                     $"<p>Best regards,</p>" +
                     $"</body></html>";
 
@@ -175,7 +150,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"<p>{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}.</p> <br>" +
                     $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
                     $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
-                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"{invite.AdditionalInfo}" +
                     $"<p>Best regards,</p>" +
                     $"</body></html>";
 
@@ -191,18 +166,17 @@ namespace Sendout_Calendar_Invite_Project
                     $"<p>{clientFirstName} - Please reach out to {candidateFirstName} to arrange the meeting location and details. They can be reached on {candidate.Phone} or at {candidate.Email}.</p> <br>" +
                     $"<p>I'm looking forward to discussing feedback following the call.</p> <br>" +
                     $"<p>If anything comes up and we need to re-arrange the call, please let me know.</p> <br>" +
-                    $"<p>{invite.AdditionalInfo}</p> <br>" +
+                    $"{invite.AdditionalInfo}" +
                     $"<p>Best regards,</p>" +
                     $"</body></html>";
             }
-            //getting permissions for Graph API
 
+            //Function that opens a calendar invite in the user's browser based on the informatino provided
             PerformAuthentication(eventTitle, invite.Location, emailTemplate, client.Email, candidate.Email, selectedDateTime);
         }
 
         private async Task PerformAuthentication(string eventTitle, string location, string emailTemplate, string clientEmail, string candidateEmail, DateTime selectedDateTime)
         {
-
             try
             {
                 //Graph API Initialisation
@@ -407,16 +381,6 @@ namespace Sendout_Calendar_Invite_Project
                     // Handle any potential exceptions
                     System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
                 }
-            }
-
-            private void Edit_Click(object sender, RoutedEventArgs e)
-            {
-                // Handle edit button click
-            }
-
-            private void AddClient_Click(object sender, RoutedEventArgs e)
-            {
-                // Add a new client to the list of clients
             }
 
             private void TemplateComboBox_DropDownClosed(object sender, EventArgs e)
