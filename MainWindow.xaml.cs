@@ -171,7 +171,7 @@ namespace Sendout_Calendar_Invite_Project
                     $"</body></html>";
             }
 
-            //Function that opens a calendar invite in the user's browser based on the informatino provided
+            //Function that opens a calendar invite in the user's browser based on the information provided and to authenticate the user.
             PerformAuthentication(eventTitle, invite.Location, emailTemplate, client.Email, candidate.Email, selectedDateTime);
         }
 
@@ -179,47 +179,26 @@ namespace Sendout_Calendar_Invite_Project
         {
             try
             {
-                //Graph API Initialisation
+                //Sets up the necessary variables for authentication
                 string clientId = "bfb8ba7b-9b57-4315-b865-764a4980d9d4";
                 string clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
-                //string tenantId = "ad479f1c-7ac4-4f58-93e9-67c0d9b6dc0c";
                 string authority = "https://login.microsoftonline.com/common";
-                //string redirectUri = "https://localhost/8080";
                 string[] scopes = { "https://graph.microsoft.com/.default" };
 
+                //Builds the confidential client application with the provided credentials
                 IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
                     .Create(clientId)
                     .WithClientSecret(clientSecret)
                     .WithAuthority(authority)
                     .Build();
 
+                //Acquires an access token for the client application
                 AuthenticationResult result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
 
-                // Create the event object
-                var newEvent = new
-                {
-                    subject = eventTitle,
-                    location = new { displayName = location },
-                    start = new { dateTime = selectedDateTime.ToString("o") },
-                    end = new { dateTime = selectedDateTime.AddMinutes(30).ToString("o") },
-                    body = new { content = emailTemplate, contentType = "HTML" },
-                    attendees = new[]
-                    {
-                        new { emailAddress = new { address = clientEmail }, type = "Required" },
-                        new { emailAddress = new { address = candidateEmail }, type = "Required" }
-                    }
-                };
-
-                var json = System.Text.Json.JsonSerializer.Serialize(newEvent);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
+                //Sets the authorization header for the graph client using the access token
                 graphClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
-
-
-                var response = await graphClient.PostAsync("https://graph.microsoft.com/v1.0/me/events", content);
-
-                // Create the URL for opening the Outlook Web App with pre-filled information
+                //Creates the URL to open the calendar invite creation page in Outlook
                 string baseUrl = "https://outlook.office.com/calendar/action/compose";
                 string subject = HttpUtility.UrlEncode(eventTitle);
                 string body = HttpUtility.UrlEncode(emailTemplate);
@@ -229,8 +208,10 @@ namespace Sendout_Calendar_Invite_Project
                 string clientEmailAddress = HttpUtility.UrlEncode(clientEmail);
                 string candidateEmailAddress = HttpUtility.UrlEncode(candidateEmail);
 
+                //Combines the URL parameters to form the complete URL
                 string url = $"{baseUrl}?subject={subject}&startdt={startDateTime}&enddt={endDateTime}&body={body}&location={encodedLocation}&to={clientEmailAddress};{candidateEmailAddress}";
 
+                //Opens the URL in the default browser to allow the user to create the calendar invite
                 System.Diagnostics.Process.Start(new ProcessStartInfo
                 {
                     FileName = url,
@@ -247,33 +228,31 @@ namespace Sendout_Calendar_Invite_Project
 
             private void SaveClient_Click(object sender, RoutedEventArgs e)
             {
-            // Create a new instance of the Client class with the entered information
+            //Creates a new instance of the Client class with the entered information
             Client client = new Client
             {
-                Id = Guid.NewGuid().ToString(),  // Generate a unique identifier for the client
+                Id = Guid.NewGuid().ToString(),  //Generates a unique identifier for the client
                 Name = ClientNameTextBox.Text,
                 Email = ClientEmailTextBox.Text,
                 Company = ClientCompanyTextBox.Text,
                 TimeZone = clientTimeZoneString
             };
 
-            // Define the file path to save the client information
+            //Defines the file path to save the client information
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
 
                 try
                 {
-                    // Serialize the new client to JSON
+                    //Serialises the new client to JSON
                     string json = JsonConvert.SerializeObject(client);
 
-                    // Append the JSON string to the existing file
+                    //Appends the JSON string to the existing file
                     File.AppendAllText(filePath, json + Environment.NewLine);
 
-                    // Show a success message
                     System.Windows.MessageBox.Show("Client information saved successfully.");
                 }
                 catch (System.Exception ex)
                 {
-                    // Handle any potential exceptions that occurred during the save operation
                     System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
                 }
             }
@@ -284,12 +263,13 @@ namespace Sendout_Calendar_Invite_Project
 
                 try
                 {
-                    // Read the JSON data from the file
+                    //Reads the JSON data from the file
                     string jsonData = File.ReadAllText(filePath);
-
+                    
+                    //Splits JSON data into individual lines so they can be processed individually
                     string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-                    // Deserialize each JSON object and add it to the list of clients
+                    //Creates a list to store client oblejects, then deserialises each JSON line into a client object and adds it to the list.
                     List<Client> clientsList = new List<Client>();
                     foreach (string json in jsonLines)
                     {
@@ -297,11 +277,11 @@ namespace Sendout_Calendar_Invite_Project
                         clientsList.Add(client);
                     }
 
-                    DataViewer dataViewer = new DataViewer(clientsList);  // Create an instance of the DataViewer window
-                    // Set the ItemsSource of the DataGrid
-
+                    //Creates an instance of the DataViewer window and displays the list of clients
+                    DataViewer dataViewer = new DataViewer(clientsList); 
                     dataViewer.ShowDialog();
-
+                    
+                    //Populates the textboxes/combobox with the selected client's data
                     ClientNameTextBox.Text = dataViewer.SelectedClientName;
                     ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
                     ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
@@ -309,14 +289,13 @@ namespace Sendout_Calendar_Invite_Project
                 }
                 catch (System.Exception ex)
                 {
-                    // Handle any potential exceptions
                     System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
                 }
             }
 
             private void SaveCandidate_Click(object sender, RoutedEventArgs e)
             {
-            // Create a new instance of the Client class with the entered information
+            //Creates a new instance of the Candidate class with the entered information
             Candidate candidate = new Candidate
             {
                 Id = Guid.NewGuid().ToString(),  // Generate a unique identifier for the client
@@ -326,23 +305,21 @@ namespace Sendout_Calendar_Invite_Project
                 TimeZone = candidateTimeZoneString
             };
 
-            // Define the file path to save the client information
+            //Define the file path to save candidate information
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
 
                 try
                 {
-                    // Serialize the new client to JSON
+                    //Serialises the new candidate to JSON
                     string json = JsonConvert.SerializeObject(candidate);
 
-                    // Append the JSON string to the existing file
+                    //Appends the JSON string to the existing file
                     File.AppendAllText(filePath, json + Environment.NewLine);
 
-                    // Show a success message
                     System.Windows.MessageBox.Show("Candidate information saved successfully.");
                 }
                 catch (System.Exception ex)
                 {
-                    // Handle any potential exceptions that occurred during the save operation
                     System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
                 }
             }
@@ -353,12 +330,13 @@ namespace Sendout_Calendar_Invite_Project
 
                 try
                 {
-                    // Read the JSON data from the file
+                    //Reads the JSON data from the file
                     string jsonData = File.ReadAllText(filePath);
 
+                    //Splits JSON data into individual lines so they can be processed individually
                     string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-                    // Deserialize each JSON object and add it to the list of clients
+                    //Creates a list to store candidate oblejects, then deserialises each JSON line into a candidate object and adds it to the list.
                     List<Candidate> candidatesList = new List<Candidate>();
                     foreach (string json in jsonLines)
                     {
@@ -366,11 +344,11 @@ namespace Sendout_Calendar_Invite_Project
                         candidatesList.Add(candidate);
                     }
 
-                    DataViewer dataViewer = new DataViewer(candidatesList);  // Create an instance of the DataViewer window
-                    // Set the ItemsSource of the DataGrid
-
+                    //Creates an instance of the DataViewer window and displays the list of clients
+                    DataViewer dataViewer = new DataViewer(candidatesList);
                     dataViewer.ShowDialog();
 
+                    //Populates the textboxes/combobox with the selected client's data
                     CandidateNameTextBox.Text = dataViewer.SelectedCandidateName;
                     CandidateEmailTextBox.Text = dataViewer.SelectedCandidateEmail;
                     CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
@@ -378,11 +356,11 @@ namespace Sendout_Calendar_Invite_Project
                 }
                 catch (System.Exception ex)
                 {
-                    // Handle any potential exceptions
                     System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
                 }
             }
 
+            //Function that updates the selectedTemplate based on which template is selected
             private void TemplateComboBox_DropDownClosed(object sender, EventArgs e)
             {
         
@@ -419,8 +397,11 @@ namespace Sendout_Calendar_Invite_Project
                     clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
                 }
 
+                //Calls function that accounts for if the client is currently in daylight saving time
                 DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
+                //Establishes the time zone for the client
                 clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
+                //Converts the user's local time to the client's time
                 clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
             }
 
@@ -445,10 +426,14 @@ namespace Sendout_Calendar_Invite_Project
                     candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
                 }
 
+                //Calls function that accounts for if the candidate is currently in daylight saving time
                 DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
+                //Establishes the time zone for the candidate
                 candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
+                //Converts the user time to the client's time
                 candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
             }
+        //Function that calculates the offset for daylight saving time
         public static DateTimeOffset DaylightConvert(DateTime selectedDateTime, TimeZoneInfo timeZone)
         {
             DateTimeOffset selectedDateTimeOffset = new DateTimeOffset(selectedDateTime, TimeSpan.Zero);
@@ -469,6 +454,7 @@ namespace Sendout_Calendar_Invite_Project
 
             return new DateTimeOffset(selectedDateTime, offset);
         }
+        //Converts the date/time from local time to the target time zone
         private string ConvertTimeZone(DateTime dateTime, TimeZoneInfo targetZone)
             {
             TimeZoneInfo localZone = TimeZoneInfo.Local;
@@ -480,7 +466,7 @@ namespace Sendout_Calendar_Invite_Project
             string formattedTime = convertedTime.ToString("h:mm tt", new CultureInfo("en-US"));
             return formattedTime;
             }
-
+        //Updates the date/time of the appointment based on the user entry
         private void DateTimePicker_ValueChanged(object sender, EventArgs e)
             {
             DateTimePicker dateTimePicker = (DateTimePicker)sender;
