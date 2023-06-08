@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Sendout_Calendar_Invite_Project
 {
-    public class Candidate
+    public class Candidate: Person
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
         public string Phone { get; set; }
-        public string TimeZone { get; set; }
     }
 }
