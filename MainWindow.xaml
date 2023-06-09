@@ -74,9 +74,9 @@
         <TextBox x:Name="AdditionalInfoTextBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Width="660" Margin="5"/>
 
         <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Content="Preview" Width="100" Margin="5" Click="Preview_Click"/>
-        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Content="Save client" Width="100" Margin="5" HorizontalAlignment="left" Click="SaveClient_Click"/>
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Content="Save client" Width="100" Margin="5" HorizontalAlignment="left" Click="SavePerson_Click"/>
         <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Content="Load client" Width="100" Margin="119,5,0,5" HorizontalAlignment="Left" Click="LoadClient_Click"/>
-        <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Save candidate" Width="100" Margin="5" HorizontalAlignment="center" Click="SaveCandidate_Click"/>
+        <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Save candidate" Width="100" Margin="5" HorizontalAlignment="center" Click="SavePerson_Click"/>
         <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Load candidate" Width="100" Margin="5" HorizontalAlignment="right" Click="LoadCandidate_Click"/>
        
     </Grid>

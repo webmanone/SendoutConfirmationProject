@@ -324,7 +324,9 @@ namespace Sendout_Calendar_Invite_Project
                     System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
                 }
             }
-
+        private void SavePerson_Click(object sender, RoutedEventArgs e)
+        { 
+        }
             private void LoadCandidate_Click(object sender, RoutedEventArgs e)
             {
                 string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
