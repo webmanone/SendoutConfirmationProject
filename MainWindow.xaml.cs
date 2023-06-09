@@ -55,8 +55,7 @@ namespace Sendout_Calendar_Invite_Project
             {
                 Name = clientName,
                 Email = clientEmail,
-                Company = clientCompany,
-                TimeZone = clientTimeZoneString
+                Company = clientCompany
             };
 
             // Create candidate object
@@ -64,9 +63,11 @@ namespace Sendout_Calendar_Invite_Project
             {
                 Name = candidateName,
                 Email = candidateEmail,
-                Phone = candidatePhone,
-                TimeZone = candidateTimeZoneString
+                Phone = candidatePhone
             };
+
+            UpdatePersonTimeZone(client);
+            UpdatePersonTimeZone(candidate);
 
             // Create calendar invite object using client and candidate objects
             CalendarInvite invite = new CalendarInvite
@@ -83,8 +84,8 @@ namespace Sendout_Calendar_Invite_Project
             };
 
             //Update client and candidate time zones
-            UpdateClientTimeZone();
-            UpdateCandidateTimeZone();
+            UpdatePersonTimeZone(client);
+            UpdatePersonTimeZone(candidate);
 
             //Construct event title
             eventTitle = $"{candidate.Name}/{client.Company} - {invite.EventType}";
@@ -376,63 +377,48 @@ namespace Sendout_Calendar_Invite_Project
                 location = selectedTemplate;
                 }
             }
-            private void UpdateClientTimeZone()
+
+        private void UpdatePersonTimeZone(Person person)
+        {
+            string timeZoneString = (person is Client) ? ClientComboBox.Text : CandidateComboBox.Text;
+            TimeZoneInfo personTimeZone = null;
+
+            if (timeZoneString == "Eastern")
             {
-                clientTimeZoneString = ClientComboBox.Text;
-
-                if (clientTimeZoneString == "Eastern")
-                {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                }
-                else if (clientTimeZoneString == "Central")
-                {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                }
-                else if (clientTimeZoneString == "Mountain")
-                {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
-                }
-                else if (clientTimeZoneString == "Pacific")
-                {
-                    clientTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-                }
-
-                //Calls function that accounts for if the client is currently in daylight saving time
-                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, clientTimeZone);
-                //Establishes the time zone for the client
-                clientTimeZone = TimeZoneInfo.CreateCustomTimeZone(clientTimeZone.Id, selectedDateTimeOffset.Offset, clientTimeZone.DisplayName, clientTimeZone.StandardName);
-                //Converts the user's local time to the client's time
-                clientTime = ConvertTimeZone(selectedDateTime, clientTimeZone);
+                personTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            }
+            else if (timeZoneString == "Central")
+            {
+                personTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+            }
+            else if (timeZoneString == "Mountain")
+            {
+                personTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
+            }
+            else if (timeZoneString == "Pacific")
+            {
+                personTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
             }
 
-            private void UpdateCandidateTimeZone()
+            DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, personTimeZone);
+            personTimeZone = TimeZoneInfo.CreateCustomTimeZone(personTimeZone.Id, selectedDateTimeOffset.Offset, personTimeZone.DisplayName, personTimeZone.StandardName);
+            string personTime = ConvertTimeZone(selectedDateTime, personTimeZone);
+
+            if (person is Client)
             {
-                candidateTimeZoneString = CandidateComboBox.Text;
-
-                if (candidateTimeZoneString == "Eastern")
-                {
-                    candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                }
-                else if (candidateTimeZoneString == "Central")
-                {
-                    candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-                }
-                else if (candidateTimeZoneString == "Mountain")
-                {
-                    candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
-                }
-                else if (candidateTimeZoneString == "Pacific")
-                {
-                    candidateTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-                }
-
-                //Calls function that accounts for if the candidate is currently in daylight saving time
-                DateTimeOffset selectedDateTimeOffset = DaylightConvert(selectedDateTime, candidateTimeZone);
-                //Establishes the time zone for the candidate
-                candidateTimeZone = TimeZoneInfo.CreateCustomTimeZone(candidateTimeZone.Id, selectedDateTimeOffset.Offset, candidateTimeZone.DisplayName, candidateTimeZone.StandardName);
-                //Converts the user time to the client's time
-                candidateTime = ConvertTimeZone(selectedDateTime, candidateTimeZone);
+                clientTimeZoneString = timeZoneString;
+                clientTimeZone = personTimeZone;
+                clientTime = personTime;
+            } else if (person is Candidate)
+            {
+                candidateTimeZoneString = timeZoneString;
+                candidateTimeZone = personTimeZone;
+                candidateTime = personTime;
             }
+        }
+
+
+
         //Function that calculates the offset for daylight saving time
         public static DateTimeOffset DaylightConvert(DateTime selectedDateTime, TimeZoneInfo timeZone)
         {
