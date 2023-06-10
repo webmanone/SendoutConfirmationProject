@@ -12,6 +12,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Diagnostics;
 using System.Web;
+using System.Windows.Forms;
+using System.Security.AccessControl;
 
 namespace Sendout_Calendar_Invite_Project
 {
@@ -27,12 +29,10 @@ namespace Sendout_Calendar_Invite_Project
         private string clientTimeZoneString = "Eastern"; //""
         private string candidateTimeZoneString = "Eastern"; //""
         private string location = ""; //Stores location of the event, which will change between Microsoft Teams or the candidate's phone number depending on what's selected.
-        private static readonly HttpClient graphClient = new HttpClient(); 
-
+        private static readonly HttpClient graphClient = new HttpClient();
         public MainWindow()
         {
             InitializeComponent();
-
         }
         private void Preview_Click(object sender, RoutedEventArgs e)
         {
@@ -226,7 +226,7 @@ namespace Sendout_Calendar_Invite_Project
             }
 
             }
-
+        /*
             private void SaveClient_Click(object sender, RoutedEventArgs e)
             {
             //Creates a new instance of the Client class with the entered information
@@ -257,7 +257,7 @@ namespace Sendout_Calendar_Invite_Project
                     System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
                 }
             }
-
+        */
             private void LoadClient_Click(object sender, RoutedEventArgs e)
             {
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
@@ -293,7 +293,7 @@ namespace Sendout_Calendar_Invite_Project
                     System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
                 }
             }
-
+        /*
             private void SaveCandidate_Click(object sender, RoutedEventArgs e)
             {
             //Creates a new instance of the Candidate class with the entered information
@@ -323,11 +323,43 @@ namespace Sendout_Calendar_Invite_Project
                 {
                     System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
                 }
-            }
+            }*/
         private void SavePerson_Click(object sender, RoutedEventArgs e)
-        { 
+        {
+                System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
+                string filePath = null;
+            
+                //Creates a person object and then creates either a client or candidate depending on the button pressed.
+                Person person = null;
+                if (button.Name == SaveClientButton.Name)
+                {
+                    filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
+                    person = new Client
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = ClientNameTextBox.Text,
+                        Email = ClientEmailTextBox.Text,
+                        Company = ClientCompanyTextBox.Text,
+                        TimeZone = clientTimeZoneString
+                    };
+                }
+                else if (button.Name == SaveCandidateButton.Name)
+                {
+                    filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
+                    person = new Candidate
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = CandidateNameTextBox.Text,
+                        Email = CandidateEmailTextBox.Text,
+                        Phone = CandidatePhoneTextBox.Text,
+                        TimeZone = candidateTimeZoneString
+                    };
+                }
+                //calls SavePerson method
+                person.SavePerson(filePath);
         }
-            private void LoadCandidate_Click(object sender, RoutedEventArgs e)
+  
+    private void LoadCandidate_Click(object sender, RoutedEventArgs e)
             {
                 string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
 
@@ -457,7 +489,7 @@ namespace Sendout_Calendar_Invite_Project
         //Updates the date/time of the appointment based on the user entry
         private void DateTimePicker_ValueChanged(object sender, EventArgs e)
             {
-            DateTimePicker dateTimePicker = (DateTimePicker)sender;
+            Xceed.Wpf.Toolkit.DateTimePicker dateTimePicker = (Xceed.Wpf.Toolkit.DateTimePicker)sender;
             selectedDateTime = dateTimePicker.Value ?? DateTime.Now;
             selectedDate = selectedDateTime.ToString("dddd, MMMM dd", new CultureInfo("en-US"));
         }
