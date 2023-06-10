@@ -36,6 +36,8 @@ namespace Sendout_Calendar_Invite_Project
         }
         private void Preview_Click(object sender, RoutedEventArgs e)
         {
+
+
             //Initialise variables to store user input
             string eventTitle = null;
             string clientName = ClientNameTextBox.Text;
@@ -49,6 +51,21 @@ namespace Sendout_Calendar_Invite_Project
             string candidateFirstName = candidateName.Split(' ')[0];
             string emailTemplate = "";
             string differentTimeZone = "";
+
+            //Validation to ensure fields aren't empty
+            if (string.IsNullOrWhiteSpace(ClientNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(ClientEmailTextBox.Text) ||
+                string.IsNullOrWhiteSpace(ClientCompanyTextBox.Text) ||
+                string.IsNullOrWhiteSpace(CandidateNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(CandidateEmailTextBox.Text) ||
+                string.IsNullOrWhiteSpace(CandidatePhoneTextBox.Text) ||
+                ClientComboBox.SelectedItem == null ||
+                CandidateComboBox.SelectedItem == null ||
+                selectedDateTime == DateTime.MinValue)
+            {
+                System.Windows.Forms.MessageBox.Show("Please fill in all required fields.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             //Create client object
             Client client = new Client
@@ -226,39 +243,41 @@ namespace Sendout_Calendar_Invite_Project
             }
 
             }
-        /*
-            private void SaveClient_Click(object sender, RoutedEventArgs e)
+        private void SavePerson_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
+            string filePath = null;
+
+            //Creates a person object and then creates either a client or candidate depending on the button pressed.
+            Person person = null;
+            if (button.Name == SaveClientButton.Name)
             {
-            //Creates a new instance of the Client class with the entered information
-            Client client = new Client
-            {
-                Id = Guid.NewGuid().ToString(),  //Generates a unique identifier for the client
-                Name = ClientNameTextBox.Text,
-                Email = ClientEmailTextBox.Text,
-                Company = ClientCompanyTextBox.Text,
-                TimeZone = clientTimeZoneString
-            };
-
-            //Defines the file path to save the client information
-            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
-
-                try
+                filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
+                person = new Client
                 {
-                    //Serialises the new client to JSON
-                    string json = JsonConvert.SerializeObject(client);
-
-                    //Appends the JSON string to the existing file
-                    File.AppendAllText(filePath, json + Environment.NewLine);
-
-                    System.Windows.MessageBox.Show("Client information saved successfully.");
-                }
-                catch (System.Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"An error occurred while saving the client information: {ex.Message}");
-                }
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ClientNameTextBox.Text,
+                    Email = ClientEmailTextBox.Text,
+                    Company = ClientCompanyTextBox.Text,
+                    TimeZone = clientTimeZoneString
+                };
             }
-        */
-            private void LoadClient_Click(object sender, RoutedEventArgs e)
+            else if (button.Name == SaveCandidateButton.Name)
+            {
+                filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
+                person = new Candidate
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = CandidateNameTextBox.Text,
+                    Email = CandidateEmailTextBox.Text,
+                    Phone = CandidatePhoneTextBox.Text,
+                    TimeZone = candidateTimeZoneString
+                };
+            }
+            //calls SavePerson method
+            person.SavePerson(filePath);
+        }
+        private void LoadClient_Click(object sender, RoutedEventArgs e)
             {
             string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
 
@@ -293,71 +312,6 @@ namespace Sendout_Calendar_Invite_Project
                     System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
                 }
             }
-        /*
-            private void SaveCandidate_Click(object sender, RoutedEventArgs e)
-            {
-            //Creates a new instance of the Candidate class with the entered information
-            Candidate candidate = new Candidate
-            {
-                Id = Guid.NewGuid().ToString(),  // Generate a unique identifier for the client
-                Name = CandidateNameTextBox.Text,
-                Email = CandidateEmailTextBox.Text,
-                Phone = CandidatePhoneTextBox.Text,
-                TimeZone = candidateTimeZoneString
-            };
-
-            //Define the file path to save candidate information
-            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
-
-                try
-                {
-                    //Serialises the new candidate to JSON
-                    string json = JsonConvert.SerializeObject(candidate);
-
-                    //Appends the JSON string to the existing file
-                    File.AppendAllText(filePath, json + Environment.NewLine);
-
-                    System.Windows.MessageBox.Show("Candidate information saved successfully.");
-                }
-                catch (System.Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"An error occurred while saving the candidate information: {ex.Message}");
-                }
-            }*/
-        private void SavePerson_Click(object sender, RoutedEventArgs e)
-        {
-                System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-                string filePath = null;
-            
-                //Creates a person object and then creates either a client or candidate depending on the button pressed.
-                Person person = null;
-                if (button.Name == SaveClientButton.Name)
-                {
-                    filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
-                    person = new Client
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Name = ClientNameTextBox.Text,
-                        Email = ClientEmailTextBox.Text,
-                        Company = ClientCompanyTextBox.Text,
-                        TimeZone = clientTimeZoneString
-                    };
-                }
-                else if (button.Name == SaveCandidateButton.Name)
-                {
-                    filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
-                    person = new Candidate
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Name = CandidateNameTextBox.Text,
-                        Email = CandidateEmailTextBox.Text,
-                        Phone = CandidatePhoneTextBox.Text,
-                        TimeZone = candidateTimeZoneString
-                    };
-                }
-                //calls SavePerson method
-                person.SavePerson(filePath);
-        }
   
     private void LoadCandidate_Click(object sender, RoutedEventArgs e)
             {
