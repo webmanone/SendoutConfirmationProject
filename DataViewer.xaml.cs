@@ -20,6 +20,8 @@ namespace Sendout_Calendar_Invite_Project
     public partial class DataViewer : Window
     {
         public List<Client> ClientsList { get; set; }
+        public List<Candidate> CandidatesList { get; set; }
+
         public string SelectedClientName { get; set; }
         public string SelectedClientEmail { get; set; }
         public string SelectedClientCompany { get; set; }
@@ -31,29 +33,20 @@ namespace Sendout_Calendar_Invite_Project
         public DataViewer(List<Client> clients)
         {
             InitializeComponent();
-
-            // Set the ItemsSource of the DataGrid to the passed-in clients
             ClientsList = clients;
-
             DataContext = this;
         }
 
         public DataViewer(List<Candidate> candidates)
         {
             InitializeComponent();
-
-            // Set the ItemsSource of the DataGrid to the passed-in candidates
             dataViewer.ItemsSource = candidates;
-        }
-        public DataViewer()
-        {
-            InitializeComponent();
         }
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // Get the selected item from the DataGrid
-            var selectedItem = dataViewer.SelectedItem;
+            var selectedItem = dataViewer.SelectedItem as Person;
 
             // Check if an item is selected
             if (selectedItem != null)
