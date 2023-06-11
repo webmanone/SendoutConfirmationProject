@@ -277,80 +277,84 @@ namespace Sendout_Calendar_Invite_Project
             //calls SavePerson method
             person.SavePerson(filePath);
         }
-        private void LoadClient_Click(object sender, RoutedEventArgs e)
+
+        private void LoadPerson_Click(object sender, RoutedEventArgs e)
+        {
+            string filePath = null;
+            List<Client> clientsList = new List<Client>();
+            List<Candidate> candidatesList = new List<Candidate>();
+
+            if (sender == LoadClientButton)
             {
-            string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
+                filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\clients.json";
+            }
+            else if (sender == LoadCandidateButton)
+            {
+                filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
+            }
 
-                try
+            try
+            {
+                // Reads the JSON data from the file
+                string jsonData = File.ReadAllText(filePath);
+
+                //Splits JSON data into individual lines so they can be processed individually
+                string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Deserialize JSON data into list of clients or candidates
+                if (sender == LoadClientButton)
                 {
-                    //Reads the JSON data from the file
-                    string jsonData = File.ReadAllText(filePath);
-                    
-                    //Splits JSON data into individual lines so they can be processed individually
-                    string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                    //Creates a list to store client oblejects, then deserialises each JSON line into a client object and adds it to the list.
-                    List<Client> clientsList = new List<Client>();
                     foreach (string json in jsonLines)
                     {
                         Client client = JsonConvert.DeserializeObject<Client>(json);
                         clientsList.Add(client);
                     }
-
-                    //Creates an instance of the DataViewer window and displays the list of clients
-                    DataViewer dataViewer = new DataViewer(clientsList); 
-                    dataViewer.ShowDialog();
-                    
-                    //Populates the textboxes/combobox with the selected client's data
-                    ClientNameTextBox.Text = dataViewer.SelectedClientName;
-                    ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
-                    ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
-                    ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
                 }
-                catch (System.Exception ex)
+                else if (sender == LoadCandidateButton)
                 {
-                    System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
-                }
-            }
-  
-    private void LoadCandidate_Click(object sender, RoutedEventArgs e)
-            {
-                string filePath = @"C:\Users\lukem\source\repos\Sendout Calendar Invite Project\Data\candidates.json";
-
-                try
-                {
-                    //Reads the JSON data from the file
-                    string jsonData = File.ReadAllText(filePath);
-
-                    //Splits JSON data into individual lines so they can be processed individually
-                    string[] jsonLines = jsonData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                    //Creates a list to store candidate oblejects, then deserialises each JSON line into a candidate object and adds it to the list.
-                    List<Candidate> candidatesList = new List<Candidate>();
                     foreach (string json in jsonLines)
                     {
                         Candidate candidate = JsonConvert.DeserializeObject<Candidate>(json);
                         candidatesList.Add(candidate);
                     }
+                }
 
-                    //Creates an instance of the DataViewer window and displays the list of clients
-                    DataViewer dataViewer = new DataViewer(candidatesList);
-                    dataViewer.ShowDialog();
+                // Creates an instance of the DataViewer window and displays the list of either candidates or clients
+                DataViewer dataViewer = null;
+                if (sender == LoadClientButton)
+                {
+                    dataViewer = new DataViewer(clientsList); // Show clients
+                }
+                else if (sender == LoadCandidateButton)
+                {
+                    dataViewer = new DataViewer(candidatesList); // Show candidates
+                }
+                dataViewer.ShowDialog();
 
-                    //Populates the textboxes/combobox with the selected client's data
+                //Populates the textboxes/combobox with the selected person's data
+                if (sender == LoadClientButton)
+                {
+                    ClientNameTextBox.Text = dataViewer.SelectedClientName;
+                    ClientEmailTextBox.Text = dataViewer.SelectedClientEmail;
+                    ClientCompanyTextBox.Text = dataViewer.SelectedClientCompany;
+                    ClientComboBox.Text = dataViewer.SelectedClientTimeZone;
+                }
+                else if (sender == LoadCandidateButton)
+                {
                     CandidateNameTextBox.Text = dataViewer.SelectedCandidateName;
                     CandidateEmailTextBox.Text = dataViewer.SelectedCandidateEmail;
                     CandidatePhoneTextBox.Text = dataViewer.SelectedCandidatePhone;
                     CandidateComboBox.Text = dataViewer.SelectedCandidateTimeZone;
                 }
-                catch (System.Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"An error occurred while loading the clients: {ex.Message}");
-                }
             }
-
-            //Function that updates the selectedTemplate based on which template is selected
-            private void TemplateComboBox_DropDownClosed(object sender, EventArgs e)
+            catch (System.Exception ex)
+            {
+                System.Windows.MessageBox.Show($"An error occurred while loading the information: {ex.Message}");
+            }
+        }
+        
+        //Function that updates the selectedTemplate based on which template is selected
+        private void TemplateComboBox_DropDownClosed(object sender, EventArgs e)
             {
         
                 selectedTemplate = TemplateComboBox.Text;    
