@@ -28,6 +28,4 @@ namespace Sendout_Calendar_Invite_Project
             }
         }
     }
-
-
 }

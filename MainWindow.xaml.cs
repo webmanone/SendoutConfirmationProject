@@ -259,7 +259,7 @@ namespace Sendout_Calendar_Invite_Project
                     Name = ClientNameTextBox.Text,
                     Email = ClientEmailTextBox.Text,
                     Company = ClientCompanyTextBox.Text,
-                    TimeZone = clientTimeZoneString
+                    TimeZone = ClientComboBox.Text
                 };
             }
             else if (button.Name == SaveCandidateButton.Name)
@@ -271,7 +271,7 @@ namespace Sendout_Calendar_Invite_Project
                     Name = CandidateNameTextBox.Text,
                     Email = CandidateEmailTextBox.Text,
                     Phone = CandidatePhoneTextBox.Text,
-                    TimeZone = candidateTimeZoneString
+                    TimeZone = CandidateComboBox.Text
                 };
             }
             //calls SavePerson method
